@@ -20,7 +20,7 @@
   --red:        #ef4444;
   --red-dim:    #7f1d1d;
   --yellow-dim: #78350f;
-  --text:       #d8dce8;
+  --text:       #E2E8F0;
   --text-dim:   #8a90a8;
   --text-muted: #555e7a;
   --mono:       'Share Tech Mono', monospace;
@@ -497,3 +497,43 @@ footer {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+
+
+/* 1. Ensure the wrapping container behaves as a unified flex/grid container */
+.input-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%; /* Forces all input groups to take full available column width */
+  box-sizing: border-box;
+}
+
+/* 2. Standardize both inputs and selects to fill the container and share styles */
+.input-wrap input[type="number"],
+.input-wrap select {
+  width: 100%;
+  flex: 1; /* Allows them to stretch identically next to the unit label */
+  height: 42px; /* Set your specific desired design height here */
+  padding: 8px 12px; /* Equal internal padding */
+  box-sizing: border-box;
+  font-size: 16px;
+  
+  /* Inherit your existing theme colors */
+  background-color: #1e2330; /* Example card background color */
+  border: 1px solid #343a40;
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+/* 3. Dropdown-specific adjustments to remove browser defaults */
+.input-wrap select {
+  appearance: none; /* Removes native OS styling/arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  
+  /* Optional: Adds a clean custom arrow to replace the browser's default */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 45px) center; /* Keeps arrow clear of the unit tag */
+}
