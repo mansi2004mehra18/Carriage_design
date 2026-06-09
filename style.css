@@ -1,38 +1,46 @@
 /* ═══════════════════════════════════════════════════════
    CARRIAGE BEAM DESIGN CALCULATOR
-   Aesthetic: Industrial / Technical Blueprint
+   Aesthetic: Industrial / Technical Blueprint (Light)
    Font: Barlow Condensed (headings) + Barlow (body) + Share Tech Mono (data)
    ═══════════════════════════════════════════════════════ */
 
 /* ── Tokens ──────────────────────────────────────────── */
 :root {
-  --bg:         #0f1117;
-  --bg2:        #181c27;
-  --bg3:        #1e2333;
-  --border:     #2c3350;
-  --border-hi:  #3d4f7a;
-  --accent:     #e8a020;
-  --accent2:    #f0c060;
-  --blue:       #3b82f6;
-  --blue-dim:   #1e3a5f;
-  --green:      #22c55e;
-  --green-dim:  #14532d;
-  --red:        #ef4444;
-  --red-dim:    #7f1d1d;
-  --yellow-dim: #78350f;
-  --text:       #E2E8F0;
-  --text-dim:   #8a90a8;
-  --text-muted: #555e7a;
-  --mono:       'Share Tech Mono', monospace;
-  --sans:       'Barlow', sans-serif;
-  --condensed:  'Barlow Condensed', sans-serif;
-  --radius:     6px;
-  --shadow:     0 2px 20px rgba(0,0,0,0.5);
+  --bg: #f1f5f9; /* Slate drafting paper light gray */
+  --bg2: #ffffff; /* Clean panel white */
+  --bg3: #1e2433; /* Dark industrial slate for high-contrast input panels */
+  --border: #cbd5e1; /* Clear engineering drawing gridlines */
+  --border-hi: #3b4663; /* Robust dark boundaries specifically for the inputs */
+  --accent: #ff5e00; /* Official Primetals Core Industrial Orange */
+  --accent2: #e05300; /* Deep orange hover action */
+  --blue: #1d4ed8; /* Highly visible text blue */
+  --blue-dim: #eff6ff; /* Soft blue panel inset */
+  --green: #047857; /* Crisp, readable safety green */
+  --green-dim: #ecfdf5; /* Muted background green */
+  --red: #b91c1c; /* Structural failure text red */
+  --red-dim: #fef2f2; /* Failure alarm soft background */
+  --yellow-dim: #fffbeb;
+  --text: #0f172a; /* Deep charcoal/slate text for high text density */
+  --text-dim: #475569; /* Balanced secondary labeling text */
+  --text-muted: #64748b; /* Muted grid information and tags */
+  --mono: "Share Tech Mono", monospace;
+  --sans: "Barlow", sans-serif;
+  --condensed: "Barlow Condensed", sans-serif;
+  --radius: 4px; /* Rigid structural cornering profiles */
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08); /* Minimal technical drop shadows */
 }
 
 /* ── Reset ───────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   background: var(--bg);
@@ -45,24 +53,29 @@ body {
 
 /* ── Background grid texture ─────────────────────────── */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+    linear-gradient(rgba(148, 163, 184, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.015) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
 }
 
-main, header, footer { position: relative; z-index: 1; }
+main,
+header,
+footer {
+  position: relative;
+  z-index: 1;
+}
 
 /* ── Header ─────────────────────────────────────────── */
 header {
   background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  padding: 0 0 0;
+  border-bottom: 2px solid var(--border);
+  padding: 0;
 }
 
 .header-inner {
@@ -81,7 +94,7 @@ header {
   padding: 3px 10px;
   border-radius: 2px;
   margin-bottom: 12px;
-  background: rgba(232,160,32,0.08);
+  background: rgba(255, 94, 0, 0.06);
 }
 
 h1 {
@@ -89,11 +102,13 @@ h1 {
   font-size: 34px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #ffffff;
+  color: var(--text) !important;
   line-height: 1.1;
   margin-bottom: 8px;
 }
-h1 span { color: var(--accent); }
+h1 span {
+  color: var(--accent);
+}
 
 .header-sub {
   font-family: var(--mono);
@@ -104,7 +119,12 @@ h1 span { color: var(--accent); }
 
 .header-rule {
   height: 3px;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--blue) 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    var(--accent) 0%,
+    var(--border) 70%,
+    transparent 100%
+  );
 }
 
 /* ── Main layout ─────────────────────────────────────── */
@@ -131,7 +151,7 @@ main {
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: #fff;
+  color: var(--text) !important;
   text-transform: uppercase;
   margin-bottom: 18px;
   display: flex;
@@ -143,8 +163,8 @@ main {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--accent);
-  background: rgba(232,160,32,0.1);
-  border: 1px solid rgba(232,160,32,0.3);
+  background: rgba(255, 94, 0, 0.08);
+  border: 1px solid rgba(255, 94, 0, 0.25);
   padding: 2px 7px;
   border-radius: 2px;
 }
@@ -159,7 +179,9 @@ main {
 }
 
 /* ── Input panel ─────────────────────────────────────── */
-.input-card { border-left: 3px solid var(--accent); }
+.input-card {
+  border-left: 3px solid var(--accent);
+}
 
 .input-grid {
   display: grid;
@@ -197,46 +219,82 @@ main {
 
 .input-wrap {
   display: flex;
-  align-items: stretch;
-  border: 1px solid var(--border-hi);
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border-hi) !important;
   border-radius: var(--radius);
   overflow: hidden;
-  background: var(--bg3);
+  background: var(--bg3) !important;
   transition: border-color 0.2s;
 }
-.input-wrap:focus-within { border-color: var(--accent); }
+.input-wrap:focus-within {
+  border-color: var(--accent) !important;
+}
 
-.input-wrap input {
+.input-wrap input,
+.input-wrap select {
+  width: 100%;
   flex: 1;
   background: transparent;
   border: none;
   outline: none;
-  color: #fff;
+  color: #ffffff !important;
   font-family: var(--mono);
   font-size: 16px;
   padding: 10px 12px;
   min-width: 0;
+  height: 44px;
+  box-sizing: border-box;
+}
+
+.input-wrap select option {
+  background: var(--bg3) !important;
+  color: #ffffff !important;
+}
+
+/* Custom Dropdown Arrow */
+.input-wrap select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='14' height='14' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'><polyline points='6 9 12 15 18 9'></polyline></svg>") !important;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 14px) center;
+}
+.input-wrap select::-ms-expand {
+  display: none;
+}
+
+/* Hide Number Spinner Controls */
+.input-wrap input[type="number"] {
+  appearance: textfield;
 }
 .input-wrap input::-webkit-inner-spin-button,
-.input-wrap input::-webkit-outer-spin-button { opacity: 1; }
+.input-wrap input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
 
 .unit {
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 14px;
   background: var(--border);
-  color: var(--text-muted);
+  color: var(--text-dim);
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: 0.04em;
   white-space: nowrap;
+  border-left: 1px solid var(--border-hi);
 }
 
 .input-group small {
   display: block;
   margin-top: 5px;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 
 /* ── Calculate button ───────────────────────────────── */
@@ -245,7 +303,7 @@ main {
   align-items: center;
   gap: 8px;
   background: var(--accent);
-  color: #000;
+  color: #ffffff !important;
   border: none;
   border-radius: var(--radius);
   padding: 12px 28px;
@@ -255,17 +313,24 @@ main {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
-  box-shadow: 0 0 20px rgba(232,160,32,0.25);
+  transition:
+    background 0.15s,
+    transform 0.1s;
+  box-shadow: none;
 }
-#btn-calc:hover  { background: var(--accent2); transform: translateY(-1px); }
-#btn-calc:active { transform: translateY(0); }
+#btn-calc:hover {
+  background: var(--accent2);
+  transform: translateY(-1px);
+}
+#btn-calc:active {
+  transform: translateY(0);
+}
 
 /* ── Error banner ────────────────────────────────────── */
 .error-banner {
-  background: rgba(239,68,68,0.12);
+  background: rgba(239, 68, 68, 0.1);
   border: 1px solid var(--red);
-  color: #fca5a5;
+  color: var(--red);
   border-radius: var(--radius);
   padding: 14px 18px;
   font-size: 13px;
@@ -280,49 +345,73 @@ main {
   padding: 22px 28px;
   border-radius: var(--radius);
   border: 1px solid;
-  box-shadow: var(--shadow);
+  box-shadow: none;
 }
 
 .feas-ok {
-  background: rgba(34,197,94,0.08);
+  background: var(--green-dim);
   border-color: var(--green);
 }
 .feas-ng {
-  background: rgba(239,68,68,0.08);
+  background: var(--red-dim);
   border-color: var(--red);
 }
 
 .feas-icon {
-  font-size: 36px;
+  font-size: 24px;
   line-height: 1;
   font-weight: 700;
   flex-shrink: 0;
-  width: 56px; height: 56px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
 }
-.feas-ok .feas-icon { color: var(--green); background: rgba(34,197,94,0.15); }
-.feas-ng .feas-icon { color: var(--red);   background: rgba(239,68,68,0.15); }
+.feas-ok .feas-icon {
+  color: var(--green);
+  background: rgba(4, 120, 87, 0.12);
+}
+.feas-ng .feas-icon {
+  color: var(--red);
+  background: rgba(185, 28, 28, 0.12);
+}
 
 .feas-title {
   font-family: var(--condensed);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
-.feas-ok .feas-title { color: var(--green); }
-.feas-ng .feas-title { color: var(--red); }
+.feas-ok .feas-title {
+  color: var(--green);
+}
+.feas-ng .feas-title {
+  color: var(--red);
+}
 
-.feas-sub { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+.feas-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
 
 .feas-B {
   margin-left: auto;
   font-family: var(--mono);
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-dim);
   text-align: right;
 }
-.feas-B strong { font-size: 28px; color: #fff; display: block; font-family: var(--condensed); font-weight: 700; }
+.feas-B strong {
+  font-size: 26px;
+  color: var(--text) !important;
+  display: block;
+  font-family: var(--condensed);
+  font-weight: 700;
+}
 
 /* ── KPI strip ───────────────────────────────────────── */
 .kpi-strip {
@@ -334,17 +423,20 @@ main {
 .kpi {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-top: 3px solid var(--blue);
+  border-top: 3px solid var(--border-hi);
   border-radius: var(--radius);
   padding: 16px 18px;
   text-align: center;
+}
+.kpi:first-child {
+  border-top-color: var(--accent);
 }
 
 .kpi-val {
   font-family: var(--condensed);
   font-size: 28px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text) !important;
   line-height: 1;
   margin-bottom: 6px;
 }
@@ -354,7 +446,7 @@ main {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 
 /* ── Detail grid ─────────────────────────────────────── */
@@ -363,7 +455,9 @@ main {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
-.span-2 { grid-column: 1 / -1; }
+.span-2 {
+  grid-column: 1 / -1;
+}
 
 /* ── Data tables ─────────────────────────────────────── */
 .data-table {
@@ -371,41 +465,52 @@ main {
   border-collapse: collapse;
   font-size: 13px;
 }
-
 .data-table th,
 .data-table td {
   padding: 9px 12px;
   text-align: left;
   border-bottom: 1px solid var(--border);
 }
-
 .data-table thead th {
   font-family: var(--condensed);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--text-dim);
-  background: var(--bg3);
+  background: var(--bg);
   font-weight: 600;
 }
 
-.data-table tbody tr:last-child td { border-bottom: none; }
-.data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
-
-.data-table tbody td:first-child { color: var(--text-dim); font-size: 12px; }
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.data-table tbody tr:hover {
+  background: rgba(15, 23, 42, 0.03) !important;
+}
+.data-table tbody td:first-child {
+  color: var(--text-dim);
+  font-size: 12px;
+}
 .data-table tbody td:not(:first-child) {
   font-family: var(--mono);
-  color: #fff;
+  color: var(--text) !important;
   text-align: right;
 }
 
-.theory-table td { text-align: left !important; }
-.theory-table td:not(:first-child) { text-align: right !important; }
+.data-table thead th:not(:first-child) {
+  text-align: right !important;
+}
+.theory-table td {
+  text-align: left !important;
+}
+.theory-table td:not(:first-child) {
+  text-align: right !important;
+}
 
 /* ── Formula box ─────────────────────────────────────── */
 .formula-box {
   margin-top: 14px;
-  background: var(--bg3);
+  background: var(--bg2);
   border: 1px solid var(--border);
   border-left: 3px solid var(--blue);
   border-radius: var(--radius);
@@ -424,8 +529,10 @@ main {
 }
 
 /* ── Status pills ────────────────────────────────────── */
-.status-cell { text-align: center !important; }
-
+.status-cell,
+.data-table thead th:last-child {
+  text-align: center !important;
+}
 .pill {
   display: inline-block;
   font-family: var(--mono);
@@ -433,25 +540,47 @@ main {
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 2px 9px;
-  border-radius: 20px;
+  border-radius: 2px;
 }
-.pill.pass { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
-.pill.fail { background: var(--red-dim);   color: var(--red);   border: 1px solid var(--red); }
-.pill.info { background: var(--yellow-dim); color: #fbbf24;     border: 1px solid #d97706; }
+.pill.pass {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+.pill.fail {
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+.pill.info {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #d97706;
+}
 
 /* ── Negative values ─────────────────────────────────── */
-.neg { color: var(--red); font-family: var(--mono); }
+.neg {
+  color: var(--red);
+  font-family: var(--mono);
+} /* ── Sweep table ─────────────────────────────────────── */
+.table-scroll {
+  overflow-x: auto;
+}
 
-/* ── Sweep table ─────────────────────────────────────── */
-.table-scroll { overflow-x: auto; }
-
-.sweep-table { min-width: 800px; }
-
-.sweep-table td { text-align: center !important; font-family: var(--mono); font-size: 12px; }
-.sweep-table td:first-child { color: var(--accent2); font-weight: 700; }
-
+.sweep-table {
+  min-width: 800px;
+}
+.sweep-table td {
+  text-align: center !important;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.sweep-table td:first-child {
+  color: var(--accent2);
+  font-weight: 700;
+}
 tr.highlight-row td {
-  background: rgba(232,160,32,0.10);
+  background: rgba(255, 94, 0, 0.07) !important;
   color: var(--accent2) !important;
 }
 tr.highlight-row td:first-child {
@@ -459,17 +588,17 @@ tr.highlight-row td:first-child {
   position: relative;
 }
 tr.highlight-row td:first-child::before {
-  content: '▶ ';
+  content: "▶ ";
   color: var(--accent);
+} /* ── Hidden ──────────────────────────────────────────── */
+.hidden {
+  display: none !important;
 }
-
-/* ── Hidden ──────────────────────────────────────────── */
-.hidden { display: none !important; }
 
 /* ── Footer ──────────────────────────────────────────── */
 footer {
   text-align: center;
-  padding: 20px 24px;
+  padding: 24px;
   font-family: var(--mono);
   font-size: 11px;
   color: var(--text-muted);
@@ -479,61 +608,46 @@ footer {
 
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 800px) {
-  .kpi-strip   { grid-template-columns: 1fr 1fr; }
-  .detail-grid { grid-template-columns: 1fr; }
-  .span-2      { grid-column: 1; }
-  h1           { font-size: 24px; }
+  .kpi-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .span-2 {
+    grid-column: 1;
+  }
+  h1 {
+    font-size: 24px;
+  }
 }
-
 @media (max-width: 500px) {
-  .kpi-strip { grid-template-columns: 1fr 1fr; }
-  .feasibility-hero { flex-wrap: wrap; }
-  .feas-B { margin-left: 0; }
-  .input-grid { grid-template-columns: 1fr; }
+  .kpi-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+  .feasibility-hero {
+    flex-wrap: wrap;
+  }
+  .feas-B {
+    margin-left: 0;
+  }
+  .input-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Scrollbar ───────────────────────────────────────── */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
-
-
-/* 1. Ensure the wrapping container behaves as a unified flex/grid container */
-.input-wrap {
-  display: flex;
-  align-items: center;
-  width: 100%; /* Forces all input groups to take full available column width */
-  box-sizing: border-box;
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
-
-/* 2. Standardize both inputs and selects to fill the container and share styles */
-.input-wrap input[type="number"],
-.input-wrap select {
-  width: 100%;
-  flex: 1; /* Allows them to stretch identically next to the unit label */
-  height: 42px; /* Set your specific desired design height here */
-  padding: 8px 12px; /* Equal internal padding */
-  box-sizing: border-box;
-  font-size: 16px;
-  
-  /* Inherit your existing theme colors */
-  background-color: #1e2330; /* Example card background color */
-  border: 1px solid #343a40;
-  color: #ffffff;
-  border-radius: 4px;
+::-webkit-scrollbar-track {
+  background: var(--bg);
 }
-
-/* 3. Dropdown-specific adjustments to remove browser defaults */
-.input-wrap select {
-  appearance: none; /* Removes native OS styling/arrow */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  cursor: pointer;
-  
-  /* Optional: Adds a clean custom arrow to replace the browser's default */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: calc(100% - 45px) center; /* Keeps arrow clear of the unit tag */
+::-webkit-scrollbar-thumb {
+  background: var(--border-hi);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
