@@ -13,20 +13,18 @@
     />
   </head>
   <body>
-    <!-- ── Header ── -->
     <header>
       <div class="header-inner">
         <div class="header-badge">IS 2062 · E250 BR</div>
         <h1>Carriage Beam <span>Design Calculator</span></h1>
         <p class="header-sub">
-          Hollow Rectangular Box Section · Ladle Carriage Car · Steel Plant
+          Composite Hollow Rectangular Box Section · Ladle Carriage Car · Steel Plant
         </p>
       </div>
       <div class="header-rule"></div>
     </header>
 
     <main>
-      <!-- ── Input Panel ── -->
       <section class="card input-card">
         <h2 class="card-title">
           <span class="card-num">01</span> Design Parameters
@@ -84,15 +82,27 @@
           </div>
 
           <div class="input-group">
-            <label for="inp-H"
-              >Section height <em>H</em>
+            <label for="inp-h1"
+              >Height <em>h₁</em> (lower)
               <span class="fixed-tag">fixed</span></label
             >
             <div class="input-wrap">
-              <input type="number" id="inp-H" value="850" min="100" step="50" />
+              <input type="number" id="inp-h1" value="425" min="50" step="25" />
               <span class="unit">mm</span>
             </div>
-            <small>Outer height of box section</small>
+            <small>Outer height of lower section</small>
+          </div>
+
+          <div class="input-group">
+            <label for="inp-h2"
+              >Height <em>h₂</em> (upper)
+              <span class="fixed-tag">fixed</span></label
+            >
+            <div class="input-wrap">
+              <input type="number" id="inp-h2" value="425" min="50" step="25" />
+              <span class="unit">mm</span>
+            </div>
+            <small>Outer height of upper section</small>
           </div>
         </div>
 
@@ -113,12 +123,9 @@
         </button>
       </section>
 
-      <!-- ── Error Banner ── -->
       <div id="error-banner" class="error-banner hidden"></div>
 
-      <!-- ── Results ── -->
       <div id="results" class="hidden">
-        <!-- Feasibility Hero -->
         <div id="feasibility-hero" class="feasibility-hero">
           <div class="feas-icon" id="feas-icon">✓</div>
           <div class="feas-text">
@@ -128,7 +135,6 @@
           <div id="feas-B" class="feas-B"></div>
         </div>
 
-        <!-- KPI Strip -->
         <div class="kpi-strip">
           <div class="kpi" id="kpi-B">
             <div class="kpi-val">—</div>
@@ -148,9 +154,7 @@
           </div>
         </div>
 
-        <!-- Two-column detail -->
         <div class="detail-grid">
-          <!-- Loading Analysis -->
           <section class="card">
             <h2 class="card-title">
               <span class="card-num">02</span> Loading Analysis
@@ -177,7 +181,6 @@
             </table>
           </section>
 
-          <!-- Section Geometry -->
           <section class="card">
             <h2 class="card-title">
               <span class="card-num">03</span> Section Geometry
@@ -185,7 +188,7 @@
             <table class="data-table">
               <tbody>
                 <tr>
-                  <td>Inner height h<sub>i</sub> = H − 2t</td>
+                  <td>Total height H = h₁ + h₂</td>
                   <td id="d-hi">—</td>
                 </tr>
                 <tr>
@@ -204,7 +207,6 @@
             </table>
           </section>
 
-          <!-- Failure Theories -->
           <section class="card span-2">
             <h2 class="card-title">
               <span class="card-num">04</span> Failure Theories → Required
@@ -245,12 +247,11 @@
               </tbody>
             </table>
             <div class="formula-box">
-              <span class="formula-label">Closed-form formula</span>
-              b(t) = [ 12·I<sub>req</sub> − 2t·(H−2t)³ ] / [ H³ − (H−2t)³ ]
+              <span class="formula-label">Numerical Numerical Root Finder</span>
+              Iterative Secant Method solving for parallel-axis composite inertia targets.
             </div>
           </section>
 
-          <!-- Stress Verification -->
           <section class="card span-2" id="stress-section">
             <h2 class="card-title">
               <span class="card-num">05</span> Stress Verification — Design
@@ -295,7 +296,6 @@
           </section>
         </div>
 
-        <!-- Sweep Table -->
         <section class="card">
           <h2 class="card-title">
             <span class="card-num">06</span> B vs t Sweep Table
@@ -321,8 +321,7 @@
           </div>
         </section>
       </div>
-      <!-- /results -->
-    </main>
+      </main>
 
     <footer>
       <p>
@@ -333,7 +332,7 @@
 
     <script>
       // ═══════════════════════════════════════════════════
-      //  CALCULATION ENGINE  (ported 1-to-1 from Python)
+      //  CALCULATION ENGINE  (Ported to Composite Sections)
       // ═══════════════════════════════════════════════════
 
       const SY = 250;
@@ -342,27 +341,76 @@
       const E = 210000; // N/mm²
       const TAU_ALL_TR = SY / (2 * FOS); // = 100 MPa
 
-      function solveBDirect(I_req, t, H) {
-        const hi = H - 2 * t;
-        const denom = H ** 3 - hi ** 3;
-        if (denom === 0) return Infinity;
-        const numerator = 12 * I_req - 2 * t * hi ** 3;
-        return numerator / denom;
+      function solveBdirect(h1, h2, I_NA_target, t) {
+        // Geometric centres (from bottom of lower section)
+        const y1 = h1 + h2 / 2;
+        const y2 = h1 / 2;
+
+        // Helper: compute total I_NA for a trial width b
+        function getInertiaForWidth(b) {
+          // Individual section areas (hollow rectangular)
+          const A1 = b * h2 - (b - 2 * t) * (h2 - 2 * t);
+          const A2 = b * h1 - (b - 2 * t) * (h1 - 2 * t);
+          // Global neutral axis
+          const y_bar = (A1 * y1 + A2 * y2) / (A1 + A2);
+          const d1 = y1 - y_bar;
+          const d2 = y_bar - y2;
+          // Own-centroid moments of inertia
+          const I_G1 = (b * Math.pow(h2, 3) - (b - 2 * t) * Math.pow(h2 - 2 * t, 3)) / 12;
+          const I_G2 = (b * Math.pow(h1, 3) - (b - 2 * t) * Math.pow(h1 - 2 * t, 3)) / 12;
+          // Parallel-axis theorem
+          return (I_G1 + A1 * d1 * d1) + (I_G2 + A2 * d2 * d2);
+        }
+
+        // Secant method: solve getInertiaForWidth(b) - I_NA_target = 0
+        let b0 = 10;
+        let b1 = 2000;
+        const tolerance = 1e-5;
+        const maxIterations = 200;
+        let exact_b = b1;
+
+        for (let i = 0; i < maxIterations; i++) {
+          const f0 = getInertiaForWidth(b0) - I_NA_target;
+          const f1 = getInertiaForWidth(b1) - I_NA_target;
+          if (Math.abs(f1 - f0) < 1e-10) break;
+          const b_new = b1 - f1 * (b1 - b0) / (f1 - f0);
+          if (Math.abs(b_new - b1) < tolerance) { exact_b = b_new; break; }
+          b0 = b1;
+          b1 = b_new;
+          exact_b = b_new;
+        }
+
+        return exact_b;
       }
 
-      function sectionModulus(B, t, H) {
-        const bi = B - 2 * t;
-        const hi = H - 2 * t;
-        if (bi <= 0 || hi <= 0) return 0;
-        const I_xx = (B * H ** 3 - bi * hi ** 3) / 12;
-        return I_xx / (H / 2);
+      // ═══════════════════════════════════════════════════
+      //  GEOMETRY HELPERS for composite section
+      // ═══════════════════════════════════════════════════
+
+      function compositeGeometry(b, t, h1, h2) {
+        const y1 = h1 + h2 / 2;
+        const y2 = h1 / 2;
+        const A1 = b * h2 - (b - 2 * t) * (h2 - 2 * t);
+        const A2 = b * h1 - (b - 2 * t) * (h1 - 2 * t);
+        const y_bar = (A1 * y1 + A2 * y2) / (A1 + A2);
+        const d1 = y1 - y_bar;
+        const d2 = y_bar - y2;
+        const I_G1 = (b * Math.pow(h2, 3) - (b - 2 * t) * Math.pow(h2 - 2 * t, 3)) / 12;
+        const I_G2 = (b * Math.pow(h1, 3) - (b - 2 * t) * Math.pow(h1 - 2 * t, 3)) / 12;
+        const I_NA = (I_G1 + A1 * d1 * d1) + (I_G2 + A2 * d2 * d2);
+        // Extreme fibre distances from NA
+        const c_top    = (h1 + h2) - y_bar;  // top of upper section
+        const c_bottom = y_bar;               // bottom of lower section
+        const c = Math.max(c_top, c_bottom);  // governing (farthest fibre)
+        const Z_NA = I_NA / c;
+        return { A1, A2, y_bar, I_NA, c, Z_NA };
       }
 
-      function calc(L, t, P_tonnes, H) {
+      function calc(L, t, P_tonnes, h1, h2) {
+        const H = h1 + h2;
         const P_N = P_tonnes * G;
         const M_max = (P_N * L) / 4;
         const V_max = P_N / 2;
-        const hi = H - 2 * t;
         const A_w = 2 * t * H;
         const tau = V_max / A_w;
 
@@ -372,9 +420,15 @@
         else if (t <= 40) S_ALL = 240 / 1.2;
         else S_ALL = 230 / 1.2;
 
+        // For target inertia solver, we must back-calculate standard required I targets.
+        // Since target Z = I / c, and c changes dynamically with section geometry via b, 
+        // we approximate/solve using worst-case outer bounds or dynamic evaluation. 
+        // To preserve original flow structure natively with your exact iterative direct function:
+        const c_approx = H / 2; 
+
         // Theory 1: Pure bending
-        const I_req_bend = (M_max * (H / 2)) / S_ALL;
-        const B_bend = solveBDirect(I_req_bend, t, H);
+        const I_req_bend = (M_max * c_approx) / S_ALL;
+        const B_bend = solveBdirect(h1, h2, I_req_bend, t);
 
         // Theory 2: Von Mises
         const disc_vm = S_ALL ** 2 - 3 * tau ** 2;
@@ -385,8 +439,8 @@
           B_vm = Infinity;
         } else {
           s_allow_vm = Math.sqrt(disc_vm);
-          I_req_vm = (M_max * (H / 2)) / s_allow_vm;
-          B_vm = solveBDirect(I_req_vm, t, H);
+          I_req_vm = (M_max * c_approx) / s_allow_vm;
+          B_vm = solveBdirect(h1, h2, I_req_vm, t);
         }
 
         // Theory 3: Tresca
@@ -398,8 +452,8 @@
           B_tr = Infinity;
         } else {
           s_allow_tr = 2 * Math.sqrt(disc_tr);
-          I_req_tr = (M_max * (H / 2)) / s_allow_tr;
-          B_tr = solveBDirect(I_req_tr, t, H);
+          I_req_tr = (M_max * c_approx) / s_allow_tr;
+          B_tr = solveBdirect(h1, h2, I_req_tr, t);
         }
 
         // Governing
@@ -408,11 +462,11 @@
         const B_des_raw = B_gov > 0 ? Math.ceil(B_gov / 5) * 5 : B_gov;
 
         let B_des, I_xx, Z_des, sig_b, sig_vm, tau_max;
-        if (B_gov > 0) {
+        if (B_gov > 0 && isFinite(B_gov)) {
           B_des = Math.round(B_des_raw);
-          Z_des = sectionModulus(B_des, t, H);
-          const bi_des = B_des - 2 * t;
-          I_xx = (B_des * H ** 3 - bi_des * hi ** 3) / 12;
+          const geom = compositeGeometry(B_des, t, h1, h2);
+          I_xx = geom.I_NA;
+          Z_des = geom.Z_NA;
           sig_b = Z_des > 0 ? M_max / Z_des : Infinity;
           sig_vm = Math.sqrt(sig_b ** 2 + 3 * tau ** 2);
           tau_max = Math.sqrt((sig_b / 2) ** 2 + tau ** 2);
@@ -423,19 +477,18 @@
 
         // Deflection
         let defl;
-        if (B_bend > 0) {
-          const hi_b = H - 2 * t;
-          const I_defl = (B_bend * H ** 3 - (B_bend - 2 * t) * hi_b ** 3) / 12;
-          defl = (P_N * L ** 3) / (48 * E * I_defl);
+        if (B_bend > 0 && isFinite(B_bend)) {
+          const geom_bend = compositeGeometry(B_bend, t, h1, h2);
+          defl = (P_N * L ** 3) / (48 * E * geom_bend.I_NA);
         } else {
           defl = NaN;
         }
 
         return {
+          H,
           P_N,
           M_max,
           V_max,
-          hi,
           A_w,
           tau,
           S_ALL,
@@ -479,7 +532,7 @@
           : '<span class="pill fail">✗ FAIL</span>';
       }
       function feasCell(B_des) {
-        if (B_des <= 0 || isNaN(B_des))
+        if (B_des <= 0 || isNaN(B_des) || !isFinite(B_des))
           return '<span class="pill fail">NEG</span>';
         return '<span class="pill pass">YES</span>';
       }
@@ -495,17 +548,20 @@
         const L = parseFloat(document.getElementById("inp-L").value);
         const t = parseFloat(document.getElementById("inp-t").value);
         const P_tonnes = parseFloat(document.getElementById("inp-P").value);
-        const H = parseFloat(document.getElementById("inp-H").value);
+        const h1 = parseFloat(document.getElementById("inp-h1").value);
+        const h2 = parseFloat(document.getElementById("inp-h2").value);
+        const H = h1 + h2;
 
         // Validation
         const errs = [];
         if (isNaN(L) || L < 500) errs.push("Span L must be ≥ 500 mm.");
         if (isNaN(t) || t < 8) errs.push("Thickness t must be ≥ 8 mm.");
-        if (isNaN(H) || H < 100) errs.push("Height H must be ≥ 100 mm.");
-        if (!isNaN(t) && !isNaN(H) && 2 * t >= H)
-          errs.push(
-            `t = ${t} mm makes inner height ≤ 0. Choose t < ${H / 2} mm.`,
-          );
+        if (isNaN(h1) || h1 < 50) errs.push("Height h₁ must be ≥ 50 mm.");
+        if (isNaN(h2) || h2 < 50) errs.push("Height h₂ must be ≥ 50 mm.");
+        if (!isNaN(t) && !isNaN(h1) && 2 * t >= h1)
+          errs.push(`t = ${t} mm makes inner height of h₁ ≤ 0. Choose t < ${h1 / 2} mm.`);
+        if (!isNaN(t) && !isNaN(h2) && 2 * t >= h2)
+          errs.push(`t = ${t} mm makes inner height of h₂ ≤ 0. Choose t < ${h2 / 2} mm.`);
         if (isNaN(P_tonnes) || P_tonnes < 0.1)
           errs.push("Load P must be ≥ 0.1 tonnes.");
 
@@ -516,10 +572,10 @@
           return;
         }
 
-        const r = calc(L, t, P_tonnes, H);
+        const r = calc(L, t, P_tonnes, h1, h2);
 
         // ── Feasibility hero ──────────────────────────
-        const feasible = r.B_gov > 0 && !isNaN(r.B_des);
+        const feasible = r.B_gov > 0 && !isNaN(r.B_des) && isFinite(r.B_des);
         const hero = document.getElementById("feasibility-hero");
         hero.className =
           "feasibility-hero " + (feasible ? "feas-ok" : "feas-ng");
@@ -529,7 +585,7 @@
           "feas-sub",
           feasible
             ? `Governing criterion: ${r.B_gov === r.B_tr ? "Tresca" : r.B_gov === r.B_vm ? "Von Mises" : "Pure Bending"}`
-            : "B is negative — web section alone satisfies I<sub>req</sub>. Use B ≥ 2t = " +
+            : "B is negative or infinite — web section alone satisfies I<sub>req</sub>. Use B ≥ 2t = " +
                 2 * t +
                 " mm.",
         );
@@ -565,7 +621,7 @@
         set("d-Sall", `${r.S_ALL.toFixed(2)} MPa`);
 
         // ── Geometry ─────────────────────────────────
-        set("d-hi", `${r.hi.toFixed(1)} mm`);
+        set("d-hi", `${H.toFixed(1)} mm`);
         set("d-Aw", `${r.A_w.toFixed(1)} mm²`);
         set("d-tau", `${r.tau.toFixed(4)} MPa`);
         set("d-tauall", `${TAU_ALL_TR.toFixed(2)} MPa`);
@@ -576,7 +632,7 @@
         set("th-B-bend", fB(r.B_bend));
         set(
           "th-st-bend",
-          r.B_bend > 0
+          r.B_bend > 0 && isFinite(r.B_bend)
             ? '<span class="pill pass">OK</span>'
             : '<span class="pill info">NEG</span>',
         );
@@ -634,11 +690,11 @@
         const tbody = document.getElementById("sweep-body");
         tbody.innerHTML = "";
         for (let tv = 8; tv <= 63; tv++) {
-          if (2 * tv >= H) break;
-          const rv = calc(L, tv, P_tonnes, H);
+          if (2 * tv >= h1 || 2 * tv >= h2) break;
+          const rv = calc(L, tv, P_tonnes, h1, h2);
           const highlight = tv === t ? ' class="highlight-row"' : "";
           const bDesStr =
-            rv.B_des > 0 && !isNaN(rv.B_des)
+            rv.B_des > 0 && !isNaN(rv.B_des) && isFinite(rv.B_des)
               ? Math.round(rv.B_des)
               : '<span class="neg">NEG</span>';
           const deflStr = isNaN(rv.defl) ? "—" : rv.defl.toFixed(4);
