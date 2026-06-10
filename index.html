@@ -1,708 +1,572 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Carriage Beam Design Calculator</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <header>
-      <div class="header-inner">
-        <div class="header-badge">IS 2062 · E250 BR</div>
-        <h1>Carriage Beam <span>Design Calculator</span></h1>
-        <p class="header-sub">
-          Composite Hollow Rectangular Box Section · Ladle Carriage Car · Steel Plant
-        </p>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carriage Beam Design Calculator v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-badge">IS 2062 · E250 BR · v2</div>
+      <h1>Carriage Beam <span>Design Calculator</span></h1>
+      <p class="header-sub">Hollow Rectangular Box Section · Ladle Carriage Car · Steel Plant</p>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="card input-card">
+      <h2 class="card-title"><span class="card-num">01</span> Design Parameters</h2>
+
+      <div class="input-grid">
+
+        <div class="input-section-label">Span &amp; Load</div>
+
+        <div class="input-group">
+          <label for="inp-L">Span between wheels <em>L</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-L" value="7800" min="500" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Min 500 mm</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-x">Load position from left <em>x</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-x" value="3900" min="1" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>0 &lt; x &lt; L &nbsp;|&nbsp; mid = L/2</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-P">Applied load <em>P</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-P" value="150" min="0.1" step="1" />
+            <span class="unit">tonnes</span>
+          </div>
+          <small>Min 0.1 t</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-H">Section height <em>H</em> <span class="fixed-tag">fixed</span></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-H" value="850" min="100" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Outer height of box section</small>
+        </div>
+
+        <div class="input-section-label">Wall Thicknesses</div>
+
+        <div class="input-group">
+          <label for="inp-t1">Web (side wall) thickness <em>t₁</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-t1" value="12" min="4" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Left &amp; right web plates</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-t2">Top flange thickness <em>t₂</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-t2" value="25" min="4" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Top plate of box section</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-t3">Bottom flange thickness <em>t₃</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-t3" value="25" min="4" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Bottom plate of box section</small>
+        </div>
+
       </div>
-      <div class="header-rule"></div>
-    </header>
 
-    <main>
-      <section class="card input-card">
-        <h2 class="card-title">
-          <span class="card-num">01</span> Design Parameters
-        </h2>
+      <button id="btn-calc" onclick="runCalc()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Calculate
+      </button>
+    </section>
 
-        <div class="input-grid">
-          <div class="input-group">
-            <label for="inp-L">Span between wheels <em>L</em></label>
-            <div class="input-wrap">
-              <input
-                type="number"
-                id="inp-L"
-                value="7800"
-                min="500"
-                step="50"
-              />
-              <span class="unit">mm</span>
-            </div>
-            <small>Min 500 mm</small>
-          </div>
+    <div id="error-banner" class="error-banner hidden"></div>
 
-          <div class="input-group">
-            <label for="inp-t">Wall thickness <em>t</em></label>
-            <div class="input-wrap">
-              <select id="inp-t">
-                <option value="8">8</option>
-                <option value="10">10</option>
-                <option value="12">12</option>
-                <option value="14">14</option>
-                <option value="16">16</option>
-                <option value="18">18</option>
-                <option value="20">20</option>
-                <option value="22">22</option>
-                <option value="25" selected>25</option>
-                <option value="28">28</option>
-                <option value="32">32</option>
-                <option value="36">36</option>
-                <option value="40">40</option>
-                <option value="45">45</option>
-                <option value="50">50</option>
-                <option value="56">56</option>
-                <option value="63">63</option>
-              </select>
-              <span class="unit">mm</span>
-            </div>
-          </div>
+    <div id="results" class="hidden">
 
-          <div class="input-group">
-            <label for="inp-P">Applied load <em>P</em></label>
-            <div class="input-wrap">
-              <input type="number" id="inp-P" value="150" min="0.1" step="1" />
-              <span class="unit">tonnes</span>
-            </div>
-            <small>Min 0.1 t</small>
-          </div>
-
-          <div class="input-group">
-            <label for="inp-h1"
-              >Height <em>h₁</em> (lower)
-              <span class="fixed-tag">fixed</span></label
-            >
-            <div class="input-wrap">
-              <input type="number" id="inp-h1" value="425" min="50" step="25" />
-              <span class="unit">mm</span>
-            </div>
-            <small>Outer height of lower section</small>
-          </div>
-
-          <div class="input-group">
-            <label for="inp-h2"
-              >Height <em>h₂</em> (upper)
-              <span class="fixed-tag">fixed</span></label
-            >
-            <div class="input-wrap">
-              <input type="number" id="inp-h2" value="425" min="50" step="25" />
-              <span class="unit">mm</span>
-            </div>
-            <small>Outer height of upper section</small>
-          </div>
+      <div id="feasibility-hero" class="feasibility-hero">
+        <div class="feas-icon" id="feas-icon">✓</div>
+        <div class="feas-text">
+          <div id="feas-title" class="feas-title">FEASIBLE DESIGN</div>
+          <div id="feas-sub" class="feas-sub"></div>
         </div>
+        <div id="feas-B" class="feas-B"></div>
+      </div>
 
-        <button id="btn-calc" onclick="runCalc()">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-          Calculate
-        </button>
-      </section>
+      <div class="kpi-strip">
+        <div class="kpi" id="kpi-B"><div class="kpi-val">—</div><div class="kpi-lbl">Design B (mm)</div></div>
+        <div class="kpi" id="kpi-Ixx"><div class="kpi-val">—</div><div class="kpi-lbl">I<sub>xx</sub> (×10⁹ mm⁴)</div></div>
+        <div class="kpi" id="kpi-Z"><div class="kpi-val">—</div><div class="kpi-lbl">Z (×10⁶ mm³)</div></div>
+        <div class="kpi" id="kpi-defl"><div class="kpi-val">—</div><div class="kpi-lbl">δ at x (mm)</div></div>
+      </div>
 
-      <div id="error-banner" class="error-banner hidden"></div>
-
-      <div id="results" class="hidden">
-        <div id="feasibility-hero" class="feasibility-hero">
-          <div class="feas-icon" id="feas-icon">✓</div>
-          <div class="feas-text">
-            <div id="feas-title" class="feas-title">FEASIBLE DESIGN</div>
-            <div id="feas-sub" class="feas-sub"></div>
-          </div>
-          <div id="feas-B" class="feas-B"></div>
-        </div>
-
-        <div class="kpi-strip">
-          <div class="kpi" id="kpi-B">
-            <div class="kpi-val">—</div>
-            <div class="kpi-lbl">Design B (mm)</div>
-          </div>
-          <div class="kpi" id="kpi-Ixx">
-            <div class="kpi-val">—</div>
-            <div class="kpi-lbl">I<sub>xx</sub> (×10⁹ mm⁴)</div>
-          </div>
-          <div class="kpi" id="kpi-Z">
-            <div class="kpi-val">—</div>
-            <div class="kpi-lbl">Z (×10⁶ mm³)</div>
-          </div>
-          <div class="kpi" id="kpi-defl">
-            <div class="kpi-val">—</div>
-            <div class="kpi-lbl">δ midspan (mm)</div>
-          </div>
-        </div>
-
-        <div class="detail-grid">
-          <section class="card">
-            <h2 class="card-title">
-              <span class="card-num">02</span> Loading Analysis
-            </h2>
-            <table class="data-table">
-              <tbody>
-                <tr>
-                  <td>Load P</td>
-                  <td id="d-PN">—</td>
-                </tr>
-                <tr>
-                  <td>Reaction R = P/2</td>
-                  <td id="d-Vmax">—</td>
-                </tr>
-                <tr>
-                  <td>M<sub>max</sub> = P·L/4</td>
-                  <td id="d-Mmax">—</td>
-                </tr>
-                <tr>
-                  <td>Allowable σ<sub>all</sub></td>
-                  <td id="d-Sall">—</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section class="card">
-            <h2 class="card-title">
-              <span class="card-num">03</span> Section Geometry
-            </h2>
-            <table class="data-table">
-              <tbody>
-                <tr>
-                  <td>Total height H = h₁ + h₂</td>
-                  <td id="d-hi">—</td>
-                </tr>
-                <tr>
-                  <td>Web shear area A<sub>w</sub> = 2·t·H</td>
-                  <td id="d-Aw">—</td>
-                </tr>
-                <tr>
-                  <td>Shear stress τ = V/A<sub>w</sub></td>
-                  <td id="d-tau">—</td>
-                </tr>
-                <tr>
-                  <td>Tresca shear allowable</td>
-                  <td id="d-tauall">—</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section class="card span-2">
-            <h2 class="card-title">
-              <span class="card-num">04</span> Failure Theories → Required
-              Breadth B
-            </h2>
-            <table class="data-table theory-table">
-              <thead>
-                <tr>
-                  <th>Theory</th>
-                  <th>σ<sub>b,allow</sub> (MPa)</th>
-                  <th>I<sub>req</sub> (×10⁹ mm⁴)</th>
-                  <th>B required (mm)</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1. Pure Bending</td>
-                  <td id="th-sall-bend">—</td>
-                  <td id="th-Ireq-bend">—</td>
-                  <td id="th-B-bend">—</td>
-                  <td id="th-st-bend" class="status-cell">—</td>
-                </tr>
-                <tr>
-                  <td>2. Von Mises √(σ²+3τ²) ≤ σ<sub>all</sub></td>
-                  <td id="th-sall-vm">—</td>
-                  <td id="th-Ireq-vm">—</td>
-                  <td id="th-B-vm">—</td>
-                  <td id="th-st-vm" class="status-cell">—</td>
-                </tr>
-                <tr>
-                  <td>3. Tresca τ<sub>max</sub> ≤ σ<sub>y</sub>/2/FOS</td>
-                  <td id="th-sall-tr">—</td>
-                  <td id="th-Ireq-tr">—</td>
-                  <td id="th-B-tr">—</td>
-                  <td id="th-st-tr" class="status-cell">—</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="formula-box">
-              <span class="formula-label">Numerical Numerical Root Finder</span>
-              Iterative Secant Method solving for parallel-axis composite inertia targets.
-            </div>
-          </section>
-
-          <section class="card span-2" id="stress-section">
-            <h2 class="card-title">
-              <span class="card-num">05</span> Stress Verification — Design
-              Section
-            </h2>
-            <table class="data-table verify-table">
-              <thead>
-                <tr>
-                  <th>Stress Check</th>
-                  <th>Calculated (MPa)</th>
-                  <th>Allowable (MPa)</th>
-                  <th>Result</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>σ<sub>b</sub> = M/Z (bending)</td>
-                  <td id="sv-sigb">—</td>
-                  <td id="sv-sigb-lim">—</td>
-                  <td id="sv-sigb-ok" class="status-cell">—</td>
-                </tr>
-                <tr>
-                  <td>τ = V/A<sub>w</sub> (shear)</td>
-                  <td id="sv-tau">—</td>
-                  <td id="sv-tau-lim">—</td>
-                  <td id="sv-tau-ok" class="status-cell">—</td>
-                </tr>
-                <tr>
-                  <td>σ<sub>vm</sub> = √(σ²+3τ²) (Von Mises)</td>
-                  <td id="sv-vm">—</td>
-                  <td id="sv-vm-lim">—</td>
-                  <td id="sv-vm-ok" class="status-cell">—</td>
-                </tr>
-                <tr>
-                  <td>τ<sub>max</sub> = √((σ/2)²+τ²) (Tresca)</td>
-                  <td id="sv-tr">—</td>
-                  <td id="sv-tr-lim">—</td>
-                  <td id="sv-tr-ok" class="status-cell">—</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-        </div>
+      <div class="detail-grid">
 
         <section class="card">
-          <h2 class="card-title">
-            <span class="card-num">06</span> B vs t Sweep Table
-            <span class="card-note">t = 8 to 63 mm</span>
-          </h2>
-          <div class="table-scroll">
-            <table class="data-table sweep-table" id="sweep-table">
-              <thead>
-                <tr>
-                  <th>t (mm)</th>
-                  <th>B<sub>bend</sub> (mm)</th>
-                  <th>B<sub>vm</sub> (mm)</th>
-                  <th>B<sub>tr</sub> (mm)</th>
-                  <th>B<sub>design</sub> (mm)</th>
-                  <th>σ<sub>b</sub> (MPa)</th>
-                  <th>τ (MPa)</th>
-                  <th>δ (mm)</th>
-                  <th>Feasible?</th>
-                </tr>
-              </thead>
-              <tbody id="sweep-body"></tbody>
-            </table>
+          <h2 class="card-title"><span class="card-num">02</span> Loading Analysis</h2>
+          <table class="data-table">
+            <tbody>
+              <tr><td>Load P</td><td id="d-PN">—</td></tr>
+              <tr><td>Reaction R<sub>A</sub> = P(L−x)/L</td><td id="d-Ra">—</td></tr>
+              <tr><td>Reaction R<sub>B</sub> = Px/L</td><td id="d-Rb">—</td></tr>
+              <tr><td>M<sub>max</sub> = Px(L−x)/L  @ x</td><td id="d-Mmax">—</td></tr>
+              <tr><td>V<sub>max</sub> = max(R<sub>A</sub>, R<sub>B</sub>)</td><td id="d-Vmax">—</td></tr>
+              <tr><td>Allowable σ<sub>all</sub></td><td id="d-Sall">—</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card">
+          <h2 class="card-title"><span class="card-num">03</span> Section Geometry</h2>
+          <table class="data-table">
+            <tbody>
+              <tr><td>Inner height h<sub>i</sub> = H − t₂ − t₃</td><td id="d-hi">—</td></tr>
+              <tr><td>Inner width b<sub>i</sub> = B − 2t₁</td><td id="d-bi">—</td></tr>
+              <tr><td>Web shear area A<sub>w</sub> = 2·t₁·H</td><td id="d-Aw">—</td></tr>
+              <tr><td>Shear stress τ = V<sub>max</sub>/A<sub>w</sub></td><td id="d-tau">—</td></tr>
+              <tr><td>Tresca shear allowable</td><td id="d-tauall">—</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card span-2">
+          <h2 class="card-title"><span class="card-num">04</span> Failure Theories → Required Breadth B</h2>
+          <table class="data-table theory-table">
+            <thead>
+              <tr>
+                <th>Theory</th>
+                <th>σ<sub>b,allow</sub> (MPa)</th>
+                <th>I<sub>req</sub> (×10⁹ mm⁴)</th>
+                <th>B required (mm)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. Pure Bending</td>
+                <td id="th-sall-bend">—</td>
+                <td id="th-Ireq-bend">—</td>
+                <td id="th-B-bend">—</td>
+                <td id="th-st-bend" class="status-cell">—</td>
+              </tr>
+              <tr>
+                <td>2. Von Mises  √(σ²+3τ²) ≤ σ<sub>all</sub></td>
+                <td id="th-sall-vm">—</td>
+                <td id="th-Ireq-vm">—</td>
+                <td id="th-B-vm">—</td>
+                <td id="th-st-vm" class="status-cell">—</td>
+              </tr>
+              <tr>
+                <td>3. Tresca  τ<sub>max</sub> ≤ σ<sub>y</sub>/2/FOS</td>
+                <td id="th-sall-tr">—</td>
+                <td id="th-Ireq-tr">—</td>
+                <td id="th-B-tr">—</td>
+                <td id="th-st-tr" class="status-cell">—</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="formula-box">
+            <span class="formula-label">Moment formula</span>
+            M<sub>max</sub> = P·x·(L−x) / L &nbsp;&nbsp;[point load at distance x from left support]
+            <br><br>
+            <span class="formula-label">Closed-form breadth formula</span>
+            b(t₁,t₂,t₃) = [ 12·I<sub>req</sub> − 2t₁·(H−t₂−t₃)³ ] / [ H³ − (H−t₂−t₃)³ ]
           </div>
         </section>
+
+        <section class="card span-2" id="stress-section">
+          <h2 class="card-title"><span class="card-num">05</span> Stress Verification — Design Section</h2>
+          <table class="data-table verify-table">
+            <thead>
+              <tr><th>Stress Check</th><th>Calculated (MPa)</th><th>Allowable (MPa)</th><th>Result</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>σ<sub>b</sub> = M/Z  (bending)</td>
+                <td id="sv-sigb">—</td><td id="sv-sigb-lim">—</td><td id="sv-sigb-ok" class="status-cell">—</td>
+              </tr>
+              <tr>
+                <td>τ = V<sub>max</sub>/A<sub>w</sub>  (shear)</td>
+                <td id="sv-tau">—</td><td id="sv-tau-lim">—</td><td id="sv-tau-ok" class="status-cell">—</td>
+              </tr>
+              <tr>
+                <td>σ<sub>vm</sub> = √(σ²+3τ²)  (Von Mises)</td>
+                <td id="sv-vm">—</td><td id="sv-vm-lim">—</td><td id="sv-vm-ok" class="status-cell">—</td>
+              </tr>
+              <tr>
+                <td>τ<sub>max</sub> = √((σ/2)²+τ²)  (Tresca)</td>
+                <td id="sv-tr">—</td><td id="sv-tr-lim">—</td><td id="sv-tr-ok" class="status-cell">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
       </div>
-      </main>
 
-    <footer>
-      <p>
-        IS 2062 Grade E250 BR · σ<sub>y</sub> = 250 MPa · FOS = 1.25 · E = 210
-        000 MPa · G = 9810 N/t
-      </p>
-    </footer>
+      <section class="card">
+        <h2 class="card-title">
+          <span class="card-num">06</span> B vs t₁ Sweep Table
+          <span class="card-note">t₁ = 8 → 63 mm &nbsp;|&nbsp; t₂ &amp; t₃ fixed at input values</span>
+        </h2>
+        <div class="table-scroll">
+          <table class="data-table sweep-table" id="sweep-table">
+            <thead>
+              <tr>
+                <th>t₁ (mm)</th>
+                <th>B<sub>bend</sub> (mm)</th>
+                <th>B<sub>vm</sub> (mm)</th>
+                <th>B<sub>tr</sub> (mm)</th>
+                <th>B<sub>design</sub> (mm)</th>
+                <th>σ<sub>b</sub> (MPa)</th>
+                <th>τ (MPa)</th>
+                <th>δ (mm)</th>
+                <th>Feasible?</th>
+              </tr>
+            </thead>
+            <tbody id="sweep-body"></tbody>
+          </table>
+        </div>
+      </section>
 
-    <script>
-      // ═══════════════════════════════════════════════════
-      //  CALCULATION ENGINE  (Ported to Composite Sections)
-      // ═══════════════════════════════════════════════════
+    </div></main>
 
-      const SY = 250;
-      const FOS = 1.25;
-      const G = 9810; // N per tonne
-      const E = 210000; // N/mm²
-      const TAU_ALL_TR = SY / (2 * FOS); // = 100 MPa
+  <footer>
+    <p>IS 2062 Grade E250 BR · σ<sub>y</sub> = 250 MPa · FOS = 1.25 · E = 210 000 MPa · G = 9810 N/t &nbsp;|&nbsp; M = Px(L−x)/L</p>
+  </footer>
 
-      function solveBdirect(h1, h2, I_NA_target, t) {
-        // Geometric centres (from bottom of lower section)
-        const y1 = h1 + h2 / 2;
-        const y2 = h1 / 2;
+  <script>
+  // ═══════════════════════════════════════════════════════════════════
+  //  CONSTANTS
+  // ═══════════════════════════════════════════════════════════════════
+  const SY         = 250;       // MPa  yield strength IS 2062 E250
+  const FOS        = 1.25;
+  const G_NperT    = 9810;      // N per tonne
+  const E_MOD      = 210000;    // N/mm²  modulus of elasticity
+  const TAU_ALL_TR = SY / (2 * FOS);   // = 100 MPa  Tresca shear allowable
 
-        // Helper: compute total I_NA for a trial width b
-        function getInertiaForWidth(b) {
-          // Individual section areas (hollow rectangular)
-          const A1 = b * h2 - (b - 2 * t) * (h2 - 2 * t);
-          const A2 = b * h1 - (b - 2 * t) * (h1 - 2 * t);
-          // Global neutral axis
-          const y_bar = (A1 * y1 + A2 * y2) / (A1 + A2);
-          const d1 = y1 - y_bar;
-          const d2 = y_bar - y2;
-          // Own-centroid moments of inertia
-          const I_G1 = (b * Math.pow(h2, 3) - (b - 2 * t) * Math.pow(h2 - 2 * t, 3)) / 12;
-          const I_G2 = (b * Math.pow(h1, 3) - (b - 2 * t) * Math.pow(h1 - 2 * t, 3)) / 12;
-          // Parallel-axis theorem
-          return (I_G1 + A1 * d1 * d1) + (I_G2 + A2 * d2 * d2);
-        }
+  // ═══════════════════════════════════════════════════════════════════
+  //  CORE FORMULA: Closed-form B from I_req  (three-thickness variant)
+  //
+  //  Box section: outer H × B, web thickness t1 (both sides),
+  //               top flange t2, bottom flange t3.
+  //  Inner height  h_i = H − t2 − t3
+  //  I_xx = (B·H³ − (B−2t1)·h_i³) / 12
+  //  Solving for B:
+  //    B·H³ − (B−2t1)·h_i³ = 12·I_req
+  //    B·(H³ − h_i³) = 12·I_req − 2·t1·h_i³
+  //    B = [12·I_req − 2·t1·h_i³] / [H³ − h_i³]
+  // ═══════════════════════════════════════════════════════════════════
+  function solveBDirect(I_req, t1, t2, t3, H) {
+    const hi    = H - t2 - t3;
+    const denom = H ** 3 - hi ** 3;
+    if (denom === 0) return Infinity;
+    const numerator = 12 * I_req - 2 * t1 * hi ** 3;
+    return numerator / denom;
+  }
 
-        // Secant method: solve getInertiaForWidth(b) - I_NA_target = 0
-        let b0 = 10;
-        let b1 = 2000;
-        const tolerance = 1e-5;
-        const maxIterations = 200;
-        let exact_b = b1;
+  // Section modulus for a given B (three-thickness section)
+  function sectionModulus(B, t1, t2, t3, H) {
+    const bi = B - 2 * t1;
+    const hi = H - t2 - t3;
+    if (bi <= 0 || hi <= 0) return 0;
+    const I_xx = (B * H ** 3 - bi * hi ** 3) / 12;
+    return I_xx / (H / 2);          // elastic modulus about NA at H/2
+  }
 
-        for (let i = 0; i < maxIterations; i++) {
-          const f0 = getInertiaForWidth(b0) - I_NA_target;
-          const f1 = getInertiaForWidth(b1) - I_NA_target;
-          if (Math.abs(f1 - f0) < 1e-10) break;
-          const b_new = b1 - f1 * (b1 - b0) / (f1 - f0);
-          if (Math.abs(b_new - b1) < tolerance) { exact_b = b_new; break; }
-          b0 = b1;
-          b1 = b_new;
-          exact_b = b_new;
-        }
+  // Moment of inertia for a given B
+  function momentOfInertia(B, t1, t2, t3, H) {
+    const bi = B - 2 * t1;
+    const hi = H - t2 - t3;
+    if (bi <= 0 || hi <= 0) return 0;
+    return (B * H ** 3 - bi * hi ** 3) / 12;
+  }
 
-        return exact_b;
-      }
+  // ═══════════════════════════════════════════════════════════════════
+  //  ALLOWABLE BENDING STRESS  (thickness-governed by governing t)
+  //  Uses the maximum of t1, t2, t3 as the governing thickness.
+  // ═══════════════════════════════════════════════════════════════════
+  function allowableBendingStress(t1, t2, t3) {
+    const t_gov = Math.max(t1, t2, t3);
+    if (t_gov <= 20)      return 250 / 1.2;   // ≈ 208.33 MPa
+    else if (t_gov <= 40) return 240 / 1.2;   // = 200 MPa
+    else                  return 230 / 1.2;   // ≈ 191.67 MPa
+  }
 
-      // ═══════════════════════════════════════════════════
-      //  GEOMETRY HELPERS for composite section
-      // ═══════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════
+  //  DEFLECTION at load point x  (simply supported, point load P at x)
+  //  δ(x) = P·(L−x)·x · [L + (L−x) − (L−x)²/L − x] / (6·E·I·L)
+  //  Simplified standard form:
+  //  δ_x = P·(L−x)·x·(2L − (L−x) − x) / (6·E·I·L)   [only valid at x]
+  //  Exact formula at the load point:
+  //  δ_x = P·b·x·(L²−b²−x²) / (6·E·I·L)  where b = L−x, x ≤ b
+  //  (covers both cases by symmetry)
+  // ═══════════════════════════════════════════════════════════════════
+  function deflectionAtLoad(P_N, L, x, E, I) {
+    const a = x;
+    const b = L - x;
+    // Standard textbook formula for deflection at the load point:
+    //   δ = P·a²·b² / (3·E·I·L)
+    return (P_N * a ** 2 * b ** 2) / (3 * E * I * L);
+  }
 
-      function compositeGeometry(b, t, h1, h2) {
-        const y1 = h1 + h2 / 2;
-        const y2 = h1 / 2;
-        const A1 = b * h2 - (b - 2 * t) * (h2 - 2 * t);
-        const A2 = b * h1 - (b - 2 * t) * (h1 - 2 * t);
-        const y_bar = (A1 * y1 + A2 * y2) / (A1 + A2);
-        const d1 = y1 - y_bar;
-        const d2 = y_bar - y2;
-        const I_G1 = (b * Math.pow(h2, 3) - (b - 2 * t) * Math.pow(h2 - 2 * t, 3)) / 12;
-        const I_G2 = (b * Math.pow(h1, 3) - (b - 2 * t) * Math.pow(h1 - 2 * t, 3)) / 12;
-        const I_NA = (I_G1 + A1 * d1 * d1) + (I_G2 + A2 * d2 * d2);
-        // Extreme fibre distances from NA
-        const c_top    = (h1 + h2) - y_bar;  // top of upper section
-        const c_bottom = y_bar;               // bottom of lower section
-        const c = Math.max(c_top, c_bottom);  // governing (farthest fibre)
-        const Z_NA = I_NA / c;
-        return { A1, A2, y_bar, I_NA, c, Z_NA };
-      }
+  // ═══════════════════════════════════════════════════════════════════
+  //  MAIN CALC ENGINE
+  // ═══════════════════════════════════════════════════════════════════
+  function calc(L, x, t1, t2, t3, P_tonnes, H) {
+    const P_N   = P_tonnes * G_NperT;
+    const a     = x;
+    const b_len = L - x;
 
-      function calc(L, t, P_tonnes, h1, h2) {
-        const H = h1 + h2;
-        const P_N = P_tonnes * G;
-        const M_max = (P_N * L) / 4;
-        const V_max = P_N / 2;
-        const A_w = 2 * t * H;
-        const tau = V_max / A_w;
+    // Reactions (simply supported)
+    const R_A   = P_N * b_len / L;    // left reaction
+    const R_B   = P_N * a / L;        // right reaction
+    const V_max = Math.max(R_A, R_B); // governing shear force
 
-        // Allowable bending stress (thickness-dependent)
-        let S_ALL;
-        if (t <= 20) S_ALL = 250 / 1.2;
-        else if (t <= 40) S_ALL = 240 / 1.2;
-        else S_ALL = 230 / 1.2;
+    // Moment at load point  M = P·x·(L−x)/L
+    const M_max = P_N * a * b_len / L;
 
-        // For target inertia solver, we must back-calculate standard required I targets.
-        // Since target Z = I / c, and c changes dynamically with section geometry via b, 
-        // we approximate/solve using worst-case outer bounds or dynamic evaluation. 
-        // To preserve original flow structure natively with your exact iterative direct function:
-        const c_approx = H / 2; 
+    // Inner height (flanges consume t2 top + t3 bottom)
+    const hi    = H - t2 - t3;
+    const A_w   = 2 * t1 * H;               // web shear area (both webs)
+    const tau   = V_max / A_w;              // average web shear stress
 
-        // Theory 1: Pure bending
-        const I_req_bend = (M_max * c_approx) / S_ALL;
-        const B_bend = solveBdirect(h1, h2, I_req_bend, t);
+    // Allowable bending stress (IS 2062, thickness-dependent)
+    const S_ALL = allowableBendingStress(t1, t2, t3);
 
-        // Theory 2: Von Mises
-        const disc_vm = S_ALL ** 2 - 3 * tau ** 2;
-        let s_allow_vm, I_req_vm, B_vm;
-        if (disc_vm <= 0) {
-          s_allow_vm = 0;
-          I_req_vm = Infinity;
-          B_vm = Infinity;
-        } else {
-          s_allow_vm = Math.sqrt(disc_vm);
-          I_req_vm = (M_max * c_approx) / s_allow_vm;
-          B_vm = solveBdirect(h1, h2, I_req_vm, t);
-        }
+    // ── Theory 1: Pure Bending ──────────────────────────────────────
+    const I_req_bend = M_max * (H / 2) / S_ALL;
+    const B_bend     = solveBDirect(I_req_bend, t1, t2, t3, H);
 
-        // Theory 3: Tresca
-        const disc_tr = TAU_ALL_TR ** 2 - tau ** 2;
-        let s_allow_tr, I_req_tr, B_tr;
-        if (disc_tr <= 0) {
-          s_allow_tr = 0;
-          I_req_tr = Infinity;
-          B_tr = Infinity;
-        } else {
-          s_allow_tr = 2 * Math.sqrt(disc_tr);
-          I_req_tr = (M_max * c_approx) / s_allow_tr;
-          B_tr = solveBdirect(h1, h2, I_req_tr, t);
-        }
+    // ── Theory 2: Von Mises ─────────────────────────────────────────
+    const disc_vm = S_ALL ** 2 - 3 * tau ** 2;
+    let s_allow_vm, I_req_vm, B_vm;
+    if (disc_vm <= 0) {
+      s_allow_vm = 0; I_req_vm = Infinity; B_vm = Infinity;
+    } else {
+      s_allow_vm = Math.sqrt(disc_vm);
+      I_req_vm   = M_max * (H / 2) / s_allow_vm;
+      B_vm       = solveBDirect(I_req_vm, t1, t2, t3, H);
+    }
 
-        // Governing
-        const B_vals = [B_bend, B_vm, B_tr];
-        const B_gov = Math.max(...B_vals);
-        const B_des_raw = B_gov > 0 ? Math.ceil(B_gov / 5) * 5 : B_gov;
+    // ── Theory 3: Tresca ────────────────────────────────────────────
+    const disc_tr = TAU_ALL_TR ** 2 - tau ** 2;
+    let s_allow_tr, I_req_tr, B_tr;
+    if (disc_tr <= 0) {
+      s_allow_tr = 0; I_req_tr = Infinity; B_tr = Infinity;
+    } else {
+      s_allow_tr = 2 * Math.sqrt(disc_tr);
+      I_req_tr   = M_max * (H / 2) / s_allow_tr;
+      B_tr       = solveBDirect(I_req_tr, t1, t2, t3, H);
+    }
 
-        let B_des, I_xx, Z_des, sig_b, sig_vm, tau_max;
-        if (B_gov > 0 && isFinite(B_gov)) {
-          B_des = Math.round(B_des_raw);
-          const geom = compositeGeometry(B_des, t, h1, h2);
-          I_xx = geom.I_NA;
-          Z_des = geom.Z_NA;
-          sig_b = Z_des > 0 ? M_max / Z_des : Infinity;
-          sig_vm = Math.sqrt(sig_b ** 2 + 3 * tau ** 2);
-          tau_max = Math.sqrt((sig_b / 2) ** 2 + tau ** 2);
-        } else {
-          B_des = B_gov;
-          I_xx = Z_des = sig_b = sig_vm = tau_max = NaN;
-        }
+    // ── Governing B ────────────────────────────────────────────────
+    const B_vals = [B_bend, B_vm, B_tr];
+    const B_gov  = Math.max(...B_vals);
+    const B_des_raw = B_gov > 0 ? Math.ceil(B_gov / 5) * 5 : B_gov;
 
-        // Deflection
-        let defl;
-        if (B_bend > 0 && isFinite(B_bend)) {
-          const geom_bend = compositeGeometry(B_bend, t, h1, h2);
-          defl = (P_N * L ** 3) / (48 * E * geom_bend.I_NA);
-        } else {
-          defl = NaN;
-        }
+    let B_des, I_xx, Z_des, sig_b, sig_vm, tau_max_tr;
+    if (B_gov > 0 && isFinite(B_gov)) {
+      B_des  = Math.round(B_des_raw);
+      I_xx   = momentOfInertia(B_des, t1, t2, t3, H);
+      Z_des  = I_xx / (H / 2);
+      sig_b  = Z_des > 0 ? M_max / Z_des : Infinity;
+      sig_vm = Math.sqrt(sig_b ** 2 + 3 * tau ** 2);
+      tau_max_tr = Math.sqrt((sig_b / 2) ** 2 + tau ** 2);
+    } else {
+      B_des = B_gov;
+      I_xx = Z_des = sig_b = sig_vm = tau_max_tr = NaN;
+    }
 
-        return {
-          H,
-          P_N,
-          M_max,
-          V_max,
-          A_w,
-          tau,
-          S_ALL,
-          I_req_bend,
-          B_bend,
-          s_allow_vm,
-          I_req_vm,
-          B_vm,
-          s_allow_tr,
-          I_req_tr,
-          B_tr,
-          B_gov,
-          B_des,
-          I_xx,
-          Z_des,
-          sig_b,
-          sig_vm,
-          tau_max,
-          defl,
-        };
-      }
+    // ── Deflection at load point x ─────────────────────────────────
+    let defl = NaN;
+    if (B_bend > 0 && isFinite(B_bend)) {
+      const B_ref  = Math.ceil(B_bend / 5) * 5;
+      const I_ref  = momentOfInertia(B_ref, t1, t2, t3, H);
+      defl = deflectionAtLoad(P_N, L, a, E_MOD, I_ref);
+    }
 
-      // ═══════════════════════════════════════════════════
-      //  UI HELPERS
-      // ═══════════════════════════════════════════════════
+    return {
+      P_N, R_A, R_B, V_max, M_max, hi, A_w, tau, S_ALL,
+      I_req_bend, B_bend,
+      s_allow_vm, I_req_vm, B_vm,
+      s_allow_tr, I_req_tr, B_tr,
+      B_gov, B_des,
+      I_xx, Z_des,
+      sig_b, sig_vm, tau_max_tr,
+      defl
+    };
+  }
 
-      function set(id, val) {
-        document.getElementById(id).innerHTML = val;
-      }
-      function fN(v, d = 2) {
-        return isNaN(v) || !isFinite(v) ? "—" : v.toFixed(d);
-      }
-      function fB(v) {
-        if (!isFinite(v)) return '<span class="neg">∞</span>';
-        if (v < 0) return `<span class="neg">${v.toFixed(1)}*</span>`;
-        return v.toFixed(1);
-      }
-      function statusPill(ok) {
-        return ok
-          ? '<span class="pill pass">✓ SAFE</span>'
-          : '<span class="pill fail">✗ FAIL</span>';
-      }
-      function feasCell(B_des) {
-        if (B_des <= 0 || isNaN(B_des) || !isFinite(B_des))
-          return '<span class="pill fail">NEG</span>';
-        return '<span class="pill pass">YES</span>';
-      }
+  // ═══════════════════════════════════════════════════════════════════
+  //  UI HELPERS
+  // ═══════════════════════════════════════════════════════════════════
+  function set(id, val) { document.getElementById(id).innerHTML = val; }
+  function fN(v, d = 2) { return isNaN(v) || !isFinite(v) ? '—' : v.toFixed(d); }
+  function fB(v) {
+    if (!isFinite(v))  return '<span class="neg">∞</span>';
+    if (v < 0)         return `<span class="neg">${v.toFixed(1)}*</span>`;
+    return v.toFixed(1);
+  }
+  function statusPill(ok) {
+    return ok
+      ? '<span class="pill pass">✓ SAFE</span>'
+      : '<span class="pill fail">✗ FAIL</span>';
+  }
+  function feasCell(B_des) {
+    if (!isFinite(B_des) || isNaN(B_des) || B_des <= 0)
+      return '<span class="pill fail">NEG</span>';
+    return '<span class="pill pass">YES</span>';
+  }
+  function governingCriterion(r) {
+    if (r.B_gov === r.B_tr && isFinite(r.B_tr)) return 'Tresca';
+    if (r.B_gov === r.B_vm && isFinite(r.B_vm)) return 'Von Mises';
+    return 'Pure Bending';
+  }
 
-      // ═══════════════════════════════════════════════════
-      //  MAIN CALCULATE
-      // ═══════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════
+  //  MAIN RUN
+  // ═══════════════════════════════════════════════════════════════════
+  function runCalc() {
+    const errBanner = document.getElementById('error-banner');
+    errBanner.classList.add('hidden');
 
-      function runCalc() {
-        const errBanner = document.getElementById("error-banner");
-        errBanner.classList.add("hidden");
+    const L        = parseFloat(document.getElementById('inp-L').value);
+    const x        = parseFloat(document.getElementById('inp-x').value);
+    const t1       = parseFloat(document.getElementById('inp-t1').value);
+    const t2       = parseFloat(document.getElementById('inp-t2').value);
+    const t3       = parseFloat(document.getElementById('inp-t3').value);
+    const P_tonnes = parseFloat(document.getElementById('inp-P').value);
+    const H        = parseFloat(document.getElementById('inp-H').value);
 
-        const L = parseFloat(document.getElementById("inp-L").value);
-        const t = parseFloat(document.getElementById("inp-t").value);
-        const P_tonnes = parseFloat(document.getElementById("inp-P").value);
-        const h1 = parseFloat(document.getElementById("inp-h1").value);
-        const h2 = parseFloat(document.getElementById("inp-h2").value);
-        const H = h1 + h2;
+    // ── Validation ──────────────────────────────────────────────────
+    const errs = [];
+    if (isNaN(L) || L < 500)                    errs.push('Span L must be ≥ 500 mm.');
+    if (isNaN(x) || x <= 0 || x >= L)           errs.push('Load position x must satisfy 0 < x < L.');
+    if (isNaN(t1) || t1 < 4)                    errs.push('Web thickness t₁ must be ≥ 4 mm.');
+    if (isNaN(t2) || t2 < 4)                    errs.push('Top flange thickness t₂ must be ≥ 4 mm.');
+    if (isNaN(t3) || t3 < 4)                    errs.push('Bottom flange thickness t₃ must be ≥ 4 mm.');
+    if (isNaN(H) || H < 100)                    errs.push('Height H must be ≥ 100 mm.');
+    if (!isNaN(t2) && !isNaN(t3) && !isNaN(H) && (t2 + t3) >= H)
+      errs.push(`t₂ + t₃ = ${t2 + t3} mm ≥ H = ${H} mm. Inner height would be ≤ 0.`);
+    if (isNaN(P_tonnes) || P_tonnes < 0.1)      errs.push('Load P must be ≥ 0.1 tonnes.');
 
-        // Validation
-        const errs = [];
-        if (isNaN(L) || L < 500) errs.push("Span L must be ≥ 500 mm.");
-        if (isNaN(t) || t < 8) errs.push("Thickness t must be ≥ 8 mm.");
-        if (isNaN(h1) || h1 < 50) errs.push("Height h₁ must be ≥ 50 mm.");
-        if (isNaN(h2) || h2 < 50) errs.push("Height h₂ must be ≥ 50 mm.");
-        if (!isNaN(t) && !isNaN(h1) && 2 * t >= h1)
-          errs.push(`t = ${t} mm makes inner height of h₁ ≤ 0. Choose t < ${h1 / 2} mm.`);
-        if (!isNaN(t) && !isNaN(h2) && 2 * t >= h2)
-          errs.push(`t = ${t} mm makes inner height of h₂ ≤ 0. Choose t < ${h2 / 2} mm.`);
-        if (isNaN(P_tonnes) || P_tonnes < 0.1)
-          errs.push("Load P must be ≥ 0.1 tonnes.");
+    if (errs.length) {
+      errBanner.innerHTML = '⚠ ' + errs.join('<br>⚠ ');
+      errBanner.classList.remove('hidden');
+      document.getElementById('results').classList.add('hidden');
+      return;
+    }
 
-        if (errs.length) {
-          errBanner.innerHTML = "⚠ " + errs.join("<br>⚠ ");
-          errBanner.classList.remove("hidden");
-          document.getElementById("results").classList.add("hidden");
-          return;
-        }
+    const r = calc(L, x, t1, t2, t3, P_tonnes, H);
 
-        const r = calc(L, t, P_tonnes, h1, h2);
+    // ── Feasibility hero ─────────────────────────────────────────────
+    const feasible = r.B_gov > 0 && isFinite(r.B_gov) && !isNaN(r.B_des);
+    const hero     = document.getElementById('feasibility-hero');
+    hero.className = 'feasibility-hero ' + (feasible ? 'feas-ok' : 'feas-ng');
+    set('feas-icon',  feasible ? '✓' : '✗');
+    set('feas-title', feasible ? 'FEASIBLE DESIGN' : 'NOT FEASIBLE');
+    set('feas-sub',   feasible
+      ? `Governing criterion: ${governingCriterion(r)} &nbsp;|&nbsp; Load at x = ${x} mm (${(x/L*100).toFixed(1)}% of span)`
+      : `B is negative — web section alone satisfies I<sub>req</sub>. Use B ≥ 2t₁ = ${2*t1} mm.`);
+    set('feas-B', feasible
+      ? `B<sub>design</sub> = <strong>${r.B_des}</strong> mm`
+      : `Min practical B ≥ 2t₁ = ${2*t1} mm`);
 
-        // ── Feasibility hero ──────────────────────────
-        const feasible = r.B_gov > 0 && !isNaN(r.B_des) && isFinite(r.B_des);
-        const hero = document.getElementById("feasibility-hero");
-        hero.className =
-          "feasibility-hero " + (feasible ? "feas-ok" : "feas-ng");
-        set("feas-icon", feasible ? "✓" : "✗");
-        set("feas-title", feasible ? "FEASIBLE DESIGN" : "NOT FEASIBLE");
-        set(
-          "feas-sub",
-          feasible
-            ? `Governing criterion: ${r.B_gov === r.B_tr ? "Tresca" : r.B_gov === r.B_vm ? "Von Mises" : "Pure Bending"}`
-            : "B is negative or infinite — web section alone satisfies I<sub>req</sub>. Use B ≥ 2t = " +
-                2 * t +
-                " mm.",
-        );
-        set(
-          "feas-B",
-          feasible
-            ? `B<sub>design</sub> = <strong>${r.B_des}</strong> mm`
-            : `Min practical B ≥ 2t = ${2 * t} mm`,
-        );
+    // ── KPI strip ────────────────────────────────────────────────────
+    set('kpi-B',    `<div class="kpi-val">${feasible ? r.B_des : '—'}</div><div class="kpi-lbl">Design B (mm)</div>`);
+    set('kpi-Ixx',  `<div class="kpi-val">${feasible ? (r.I_xx/1e9).toFixed(4) : '—'}</div><div class="kpi-lbl">I<sub>xx</sub> (×10⁹ mm⁴)</div>`);
+    set('kpi-Z',    `<div class="kpi-val">${feasible ? (r.Z_des/1e6).toFixed(4) : '—'}</div><div class="kpi-lbl">Z (×10⁶ mm³)</div>`);
+    set('kpi-defl', `<div class="kpi-val">${isNaN(r.defl) ? '—' : r.defl.toFixed(3)}</div><div class="kpi-lbl">δ at x (mm)</div>`);
 
-        // ── KPI strip ────────────────────────────────
-        set(
-          "kpi-B",
-          `<div class="kpi-val">${feasible ? r.B_des : "—"}</div><div class="kpi-lbl">Design B (mm)</div>`,
-        );
-        set(
-          "kpi-Ixx",
-          `<div class="kpi-val">${feasible ? (r.I_xx / 1e9).toFixed(4) : "—"}</div><div class="kpi-lbl">I<sub>xx</sub> (×10⁹ mm⁴)</div>`,
-        );
-        set(
-          "kpi-Z",
-          `<div class="kpi-val">${feasible ? (r.Z_des / 1e6).toFixed(4) : "—"}</div><div class="kpi-lbl">Z (×10⁶ mm³)</div>`,
-        );
-        set(
-          "kpi-defl",
-          `<div class="kpi-val">${isNaN(r.defl) ? "—" : r.defl.toFixed(3)}</div><div class="kpi-lbl">δ midspan (mm)</div>`,
-        );
+    // ── Loading ───────────────────────────────────────────────────────
+    set('d-PN',   `${(r.P_N/1000).toFixed(2)} kN`);
+    set('d-Ra',   `${(r.R_A/1000).toFixed(3)} kN`);
+    set('d-Rb',   `${(r.R_B/1000).toFixed(3)} kN`);
+    set('d-Mmax', `${(r.M_max/1e6).toFixed(3)} kN·m`);
+    set('d-Vmax', `${(r.V_max/1000).toFixed(3)} kN`);
+    set('d-Sall', `${r.S_ALL.toFixed(2)} MPa`);
 
-        // ── Loading ───────────────────────────────────
-        set("d-PN", `${(r.P_N / 1000).toFixed(2)} kN`);
-        set("d-Vmax", `${(r.V_max / 1000).toFixed(2)} kN`);
-        set("d-Mmax", `${(r.M_max / 1e6).toFixed(3)} kN·m`);
-        set("d-Sall", `${r.S_ALL.toFixed(2)} MPa`);
+    // ── Geometry ──────────────────────────────────────────────────────
+    set('d-hi',    `${r.hi.toFixed(1)} mm`);
+    set('d-bi',    feasible ? `${(r.B_des - 2*t1).toFixed(1)} mm` : '—');
+    set('d-Aw',    `${r.A_w.toFixed(1)} mm²`);
+    set('d-tau',   `${r.tau.toFixed(4)} MPa`);
+    set('d-tauall',`${TAU_ALL_TR.toFixed(2)} MPa`);
 
-        // ── Geometry ─────────────────────────────────
-        set("d-hi", `${H.toFixed(1)} mm`);
-        set("d-Aw", `${r.A_w.toFixed(1)} mm²`);
-        set("d-tau", `${r.tau.toFixed(4)} MPa`);
-        set("d-tauall", `${TAU_ALL_TR.toFixed(2)} MPa`);
+    // ── Failure theories ──────────────────────────────────────────────
+    set('th-sall-bend',  `${r.S_ALL.toFixed(2)}`);
+    set('th-Ireq-bend',  `${(r.I_req_bend/1e9).toFixed(4)}`);
+    set('th-B-bend',     fB(r.B_bend));
+    set('th-st-bend',    r.B_bend > 0 && isFinite(r.B_bend) ? '<span class="pill pass">OK</span>' : '<span class="pill info">NEG</span>');
 
-        // ── Failure theories ─────────────────────────
-        set("th-sall-bend", `${r.S_ALL.toFixed(2)}`);
-        set("th-Ireq-bend", `${(r.I_req_bend / 1e9).toFixed(4)}`);
-        set("th-B-bend", fB(r.B_bend));
-        set(
-          "th-st-bend",
-          r.B_bend > 0 && isFinite(r.B_bend)
-            ? '<span class="pill pass">OK</span>'
-            : '<span class="pill info">NEG</span>',
-        );
+    set('th-sall-vm',    r.s_allow_vm > 0 ? r.s_allow_vm.toFixed(4) : '—');
+    set('th-Ireq-vm',    isFinite(r.I_req_vm) ? (r.I_req_vm/1e9).toFixed(4) : '∞');
+    set('th-B-vm',       fB(r.B_vm));
+    set('th-st-vm',      r.B_vm > 0 && isFinite(r.B_vm) ? '<span class="pill pass">OK</span>' : '<span class="pill info">NEG/∞</span>');
 
-        set("th-sall-vm", r.s_allow_vm > 0 ? r.s_allow_vm.toFixed(4) : "—");
-        set(
-          "th-Ireq-vm",
-          isFinite(r.I_req_vm) ? (r.I_req_vm / 1e9).toFixed(4) : "∞",
-        );
-        set("th-B-vm", fB(r.B_vm));
-        set(
-          "th-st-vm",
-          r.B_vm > 0 && isFinite(r.B_vm)
-            ? '<span class="pill pass">OK</span>'
-            : '<span class="pill info">NEG/∞</span>',
-        );
+    set('th-sall-tr',    r.s_allow_tr > 0 ? r.s_allow_tr.toFixed(4) : '—');
+    set('th-Ireq-tr',    isFinite(r.I_req_tr) ? (r.I_req_tr/1e9).toFixed(4) : '∞');
+    set('th-B-tr',       fB(r.B_tr));
+    set('th-st-tr',      r.B_tr > 0 && isFinite(r.B_tr) ? '<span class="pill pass">OK</span>' : '<span class="pill info">NEG/∞</span>');
 
-        set("th-sall-tr", r.s_allow_tr > 0 ? r.s_allow_tr.toFixed(4) : "—");
-        set(
-          "th-Ireq-tr",
-          isFinite(r.I_req_tr) ? (r.I_req_tr / 1e9).toFixed(4) : "∞",
-        );
-        set("th-B-tr", fB(r.B_tr));
-        set(
-          "th-st-tr",
-          r.B_tr > 0 && isFinite(r.B_tr)
-            ? '<span class="pill pass">OK</span>'
-            : '<span class="pill info">NEG/∞</span>',
-        );
+    // ── Stress verification ───────────────────────────────────────────
+    const stressSec = document.getElementById('stress-section');
+    if (feasible) {
+      stressSec.style.display = '';
+      set('sv-sigb',     fN(r.sig_b, 3));
+      set('sv-sigb-lim', r.S_ALL.toFixed(2));
+      set('sv-sigb-ok',  statusPill(r.sig_b <= r.S_ALL + 0.05));
 
-        // ── Stress verification ───────────────────────
-        const stressSec = document.getElementById("stress-section");
-        if (feasible) {
-          stressSec.style.display = "";
-          set("sv-sigb", fN(r.sig_b, 3));
-          set("sv-sigb-lim", r.S_ALL.toFixed(2));
-          set("sv-sigb-ok", statusPill(r.sig_b <= r.S_ALL + 0.05));
+      set('sv-tau',      fN(r.tau, 4));
+      set('sv-tau-lim',  TAU_ALL_TR.toFixed(2));
+      set('sv-tau-ok',   statusPill(r.tau <= TAU_ALL_TR + 0.05));
 
-          set("sv-tau", fN(r.tau, 4));
-          set("sv-tau-lim", TAU_ALL_TR.toFixed(2));
-          set("sv-tau-ok", statusPill(r.tau <= TAU_ALL_TR + 0.05));
+      set('sv-vm',       fN(r.sig_vm, 3));
+      set('sv-vm-lim',   r.S_ALL.toFixed(2));
+      set('sv-vm-ok',    statusPill(r.sig_vm <= r.S_ALL + 0.05));
 
-          set("sv-vm", fN(r.sig_vm, 3));
-          set("sv-vm-lim", r.S_ALL.toFixed(2));
-          set("sv-vm-ok", statusPill(r.sig_vm <= r.S_ALL + 0.05));
+      set('sv-tr',       fN(r.tau_max_tr, 3));
+      set('sv-tr-lim',   TAU_ALL_TR.toFixed(2));
+      set('sv-tr-ok',    statusPill(r.tau_max_tr <= TAU_ALL_TR + 0.05));
+    } else {
+      stressSec.style.display = 'none';
+    }
 
-          set("sv-tr", fN(r.tau_max, 3));
-          set("sv-tr-lim", TAU_ALL_TR.toFixed(2));
-          set("sv-tr-ok", statusPill(r.tau_max <= TAU_ALL_TR + 0.05));
-        } else {
-          stressSec.style.display = "none";
-        }
+    // ── Sweep table (varies t1, keeps t2 & t3 fixed) ─────────────────
+    const tbody = document.getElementById('sweep-body');
+    tbody.innerHTML = '';
+    for (let tv = 8; tv <= 63; tv++) {
+      if ((t2 + t3) >= H) break;       
+      const rv        = calc(L, x, tv, t2, t3, P_tonnes, H);
+      const highlight = tv === t1 ? ' class="highlight-row"' : '';
+      const bDesStr   = rv.B_des > 0 && isFinite(rv.B_des) && !isNaN(rv.B_des)
+        ? Math.round(rv.B_des)
+        : '<span class="neg">NEG</span>';
+      const deflStr   = isNaN(rv.defl) ? '—' : rv.defl.toFixed(4);
+      const sigbStr   = isNaN(rv.sig_b) ? '—' : rv.sig_b.toFixed(2);
 
-        // ── Sweep table ───────────────────────────────
-        const tbody = document.getElementById("sweep-body");
-        tbody.innerHTML = "";
-        for (let tv = 8; tv <= 63; tv++) {
-          if (2 * tv >= h1 || 2 * tv >= h2) break;
-          const rv = calc(L, tv, P_tonnes, h1, h2);
-          const highlight = tv === t ? ' class="highlight-row"' : "";
-          const bDesStr =
-            rv.B_des > 0 && !isNaN(rv.B_des) && isFinite(rv.B_des)
-              ? Math.round(rv.B_des)
-              : '<span class="neg">NEG</span>';
-          const deflStr = isNaN(rv.defl) ? "—" : rv.defl.toFixed(4);
-          const sigbStr = isNaN(rv.sig_b) ? "—" : rv.sig_b.toFixed(2);
-
-          tbody.insertAdjacentHTML(
-            "beforeend",
-            `
+      tbody.insertAdjacentHTML('beforeend', `
         <tr${highlight}>
           <td>${tv}</td>
           <td>${fB(rv.B_bend)}</td>
@@ -713,26 +577,19 @@
           <td>${rv.tau.toFixed(4)}</td>
           <td>${deflStr}</td>
           <td>${feasCell(rv.B_des)}</td>
-        </tr>`,
-          );
-        }
+        </tr>`);
+    }
 
-        // Show results
-        document.getElementById("results").classList.remove("hidden");
+    // Show results & scroll
+    document.getElementById('results').classList.remove('hidden');
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-        // Scroll to results smoothly
-        document
-          .getElementById("results")
-          .scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+  // Enter key triggers calc
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') runCalc(); });
 
-      // Allow Enter key to trigger calculation
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") runCalc();
-      });
-
-      // Run once on load with defaults
-      window.addEventListener("load", runCalc);
-    </script>
-  </body>
+  // Auto-run on load
+  window.addEventListener('load', runCalc);
+  </script>
+</body>
 </html>
