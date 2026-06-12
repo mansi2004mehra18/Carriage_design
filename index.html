@@ -64,7 +64,29 @@
           <small>Outer height of box section</small>
         </div>
 
-        <div class="input-section-label">Wall Thicknesses</div>
+        <div class="input-section-label">Factor of Safety</div>
+        
+        <div class="input-group">
+          <label for="inp-fos">FOS for allowable stress <em>FOS</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-fos" value="1.2" min="1.0" step="0.05" />
+            <span class="unit">—</span>
+          </div>
+          <small>Min 1.0 &nbsp;|&nbsp; IS 2062 default 1.25</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-fos-load">FOS for axial load(to be multiplied) <em>FOS_load</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-fos-load" value="1" min="1.0" step="0.05" />
+            <span class="unit">—</span>
+          </div>
+          <small>Min 1.0 &nbsp;|&nbsp; IS 2062 default 1.25</small>
+        </div>
+
+        <div class="row"> </div>
+         <div class="row"> </div>
+          <div class="input-section-label">Wall Thicknesses</div>
 
         <div class="input-group">
           <label for="inp-t1">Web (side wall) thickness <em>t₁</em></label>
@@ -92,7 +114,7 @@
           </div>
           <small>Bottom plate of box section</small>
         </div>
-
+        
       </div>
 
       <button id="btn-calc" onclick="runCalc()">
@@ -100,6 +122,371 @@
         Calculate
       </button>
     </section>
+
+    <!-- ── SFD / BMD Diagrams ──────────────────────────────────────── -->
+    <section class="card sfd-bmd-card">
+      <h2 class="card-title"><span class="card-num">◈</span> Shear Force &amp; Bending Moment Diagrams</h2>
+      <p class="sfd-note">Diagrams update live with load position <em>x</em> and span <em>L</em>.</p>
+      <div class="sfd-bmd-row">
+        <div class="sfd-bmd-item">
+          <div class="diagram-label">Shear Force Diagram (SFD)</div>
+          <canvas id="sfd-canvas" width="520" height="240"></canvas>
+        </div>
+        <div class="sfd-bmd-item">
+          <div class="diagram-label">Bending Moment Diagram (BMD)</div>
+          <canvas id="bmd-canvas" width="520" height="240"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .sfd-bmd-card {
+        margin-bottom: 0;
+      }
+      .sfd-note {
+        font-size: 0.78rem;
+        color: var(--muted, #8a9bb0);
+        margin: -4px 0 14px;
+        letter-spacing: 0.02em;
+      }
+      .sfd-bmd-row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .sfd-bmd-item {
+        flex: 1 1 300px;
+        min-width: 280px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .diagram-label {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #f0a500;
+        padding: 3px 8px;
+        border-left: 3px solid #f0a500;
+        background: rgba(240,165,0,0.07);
+      }
+      #sfd-canvas, #bmd-canvas {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        background: #0d1117;
+        border: 1px solid rgba(255,255,255,0.07);
+        display: block;
+      }
+    </style>
+
+    <script>
+    // ── SFD / BMD renderer ───────────────────────────────────────────
+    function drawDiagrams() {
+      const Lv = parseFloat(document.getElementById('inp-L').value);
+      const xv = parseFloat(document.getElementById('inp-x').value);
+      const Pv = parseFloat(document.getElementById('inp-P').value) || 1;
+
+      if (isNaN(Lv) || isNaN(xv) || xv <= 0 || xv >= Lv || Lv <= 0) return;
+
+      const P  = Pv * 9810;        // N (just for proportions – keep normalised)
+      const Ra = P * (Lv - xv) / Lv;
+      const Rb = P * xv / Lv;
+      const Mmax = P * xv * (Lv - xv) / Lv;
+
+      _drawSFD(document.getElementById('sfd-canvas'), Lv, xv, Ra, Rb, P);
+      _drawBMD(document.getElementById('bmd-canvas'), Lv, xv, Mmax, Ra);
+    }
+
+    function _canvasSetup(canvas) {
+      const dpr = window.devicePixelRatio || 1;
+      const W   = canvas.offsetWidth  || 520;
+      const H   = canvas.offsetHeight || 240;
+      canvas.width  = W * dpr;
+      canvas.height = H * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, W, H);
+      return { ctx, W, H };
+    }
+
+    function _drawSFD(canvas, L, x, Ra, Rb, P) {
+      const { ctx, W, H } = _canvasSetup(canvas);
+      const pad = { top: 28, bot: 36, left: 56, right: 24 };
+      const gW  = W - pad.left - pad.right;
+      const gH  = H - pad.top  - pad.bot;
+
+      // normalise shear values to canvas space
+      const maxV   = Math.max(Ra, Rb);
+      const scaleY = (gH * 0.42) / maxV;
+      const baseY  = pad.top + gH / 2;   // zero axis
+
+      const xPx = v => pad.left + (v / L) * gW;  // position → px
+      const vPx = v => baseY - v * scaleY;        // shear  → px (up = positive)
+
+      // ── grid lines ──────────────────────────────────────────────────
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth   = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.top + (gH / 4) * i;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + gW, y); ctx.stroke();
+      }
+
+      // ── zero axis ───────────────────────────────────────────────────
+      ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+      ctx.lineWidth   = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, baseY);
+      ctx.lineTo(pad.left + gW, baseY);
+      ctx.stroke();
+
+      // ── beam baseline ───────────────────────────────────────────────
+      const beamY = H - pad.bot + 12;
+      ctx.strokeStyle = '#4a90d9';
+      ctx.lineWidth   = 3;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, beamY); ctx.lineTo(pad.left + gW, beamY); ctx.stroke();
+
+      // supports (triangles)
+      _triangle(ctx, pad.left,          beamY, 8, '#4a90d9');
+      _triangle(ctx, pad.left + gW,     beamY, 8, '#4a90d9');
+
+      // load arrow at x
+      const xLoadPx = xPx(x);
+      ctx.strokeStyle = '#f0a500'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(xLoadPx, beamY - 28); ctx.lineTo(xLoadPx, beamY - 2); ctx.stroke();
+      _arrowHead(ctx, xLoadPx, beamY - 2, '#f0a500');
+
+      // ── SFD fill & outline ──────────────────────────────────────────
+      // Left of load: V = +Ra (above zero line)
+      // Right of load: V = −Rb (below zero line)
+      const y0     = baseY;            // zero
+      const yRa    = vPx(Ra);          // + Ra above
+      const yNegRb = vPx(-Rb);         // − Rb below
+      const xLoad  = xPx(x);
+      const xL0    = pad.left;
+      const xLEnd  = pad.left + gW;
+
+      // positive region fill
+      ctx.fillStyle = 'rgba(74,220,130,0.18)';
+      ctx.beginPath();
+      ctx.moveTo(xL0,   y0);
+      ctx.lineTo(xL0,   yRa);
+      ctx.lineTo(xLoad, yRa);
+      ctx.lineTo(xLoad, y0);
+      ctx.closePath();
+      ctx.fill();
+
+      // negative region fill
+      ctx.fillStyle = 'rgba(220,74,74,0.18)';
+      ctx.beginPath();
+      ctx.moveTo(xLoad, y0);
+      ctx.lineTo(xLoad, yNegRb);
+      ctx.lineTo(xLEnd, yNegRb);
+      ctx.lineTo(xLEnd, y0);
+      ctx.closePath();
+      ctx.fill();
+
+      // outline
+      ctx.strokeStyle = '#4adc82'; ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(xL0,   y0);
+      ctx.lineTo(xL0,   yRa);
+      ctx.lineTo(xLoad, yRa);
+      ctx.lineTo(xLoad, yNegRb);
+      ctx.lineTo(xLEnd, yNegRb);
+      ctx.lineTo(xLEnd, y0);
+      ctx.stroke();
+
+      // ── annotations ──────────────────────────────────────────────────
+      ctx.fillStyle = '#4adc82';
+      ctx.font = 'bold 11px "Share Tech Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`+${(Ra/9810).toFixed(1)} t`, xL0 + 4, yRa - 4);
+
+      ctx.fillStyle = '#dc4a4a';
+      ctx.textAlign = 'right';
+      ctx.fillText(`−${(Rb/9810).toFixed(1)} t`, xLEnd - 4, yNegRb + 12);
+
+      // x label
+      ctx.fillStyle = '#f0a500';
+      ctx.font = '10px "Barlow", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`x = ${(x/1000).toFixed(2)} m`, xLoad, beamY - 32);
+
+      // axis label
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.font = '10px "Barlow", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('V (kN)', pad.left - 28, pad.top + gH / 2);
+
+      // x-axis labels
+      ctx.fillStyle = 'rgba(255,255,255,0.30)';
+      ctx.font = '9px "Barlow", sans-serif';
+      ctx.textAlign = 'left';  ctx.fillText('0', pad.left, H - pad.bot + 26);
+      ctx.textAlign = 'right'; ctx.fillText(`${(L/1000).toFixed(1)} m`, pad.left + gW, H - pad.bot + 26);
+
+      // title
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = 'bold 10px "Barlow Condensed", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.letterSpacing = '0.05em';
+      ctx.fillText('SHEAR FORCE DIAGRAM', W / 2, pad.top - 8);
+    }
+
+    function _drawBMD(canvas, L, x, Mmax, Ra) {
+      const { ctx, W, H } = _canvasSetup(canvas);
+      const pad = { top: 28, bot: 36, left: 56, right: 24 };
+      const gW  = W - pad.left - pad.right;
+      const gH  = H - pad.top  - pad.bot;
+
+      const scaleY = (gH * 0.78) / Mmax;
+      const baseY  = pad.top + gH;          // BMD drawn downward (sagging positive)
+      const xPx    = v => pad.left + (v / L) * gW;
+      const mPx    = v => baseY - v * scaleY;  // moment → px (positive = downward sagging)
+
+      // ── grid ────────────────────────────────────────────────────────
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth   = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.top + (gH / 4) * i;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + gW, y); ctx.stroke();
+      }
+
+      // ── zero axis (top) ─────────────────────────────────────────────
+      ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+      ctx.lineWidth   = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, baseY); ctx.lineTo(pad.left + gW, baseY); ctx.stroke();
+
+      // ── beam baseline ───────────────────────────────────────────────
+      const beamY = H - pad.bot + 12;
+      ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(pad.left, beamY); ctx.lineTo(pad.left + gW, beamY); ctx.stroke();
+      _triangle(ctx, pad.left, beamY, 8, '#4a90d9');
+      _triangle(ctx, pad.left + gW, beamY, 8, '#4a90d9');
+
+      // load arrow
+      const xLoadPx = xPx(x);
+      ctx.strokeStyle = '#f0a500'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(xLoadPx, beamY - 28); ctx.lineTo(xLoadPx, beamY - 2); ctx.stroke();
+      _arrowHead(ctx, xLoadPx, beamY - 2, '#f0a500');
+
+      // ── BMD parabolic shape (two straight lines for point load) ─────
+      const nPts = 80;
+      const pts  = [];
+      for (let i = 0; i <= nPts; i++) {
+        const s  = (i / nPts) * L;
+        const m  = s <= x
+          ? Ra * s
+          : Ra * s - (Ra + (Mmax / x - Ra)) * (s - x);   // simplified: Ra·s − P·(s−x)
+        // cleaner: M(s) = Ra*s for s<=x; Ra*s - P*(s-x) for s>x
+        const mVal = s <= x
+          ? Ra * s
+          : Ra * s - (Ra / (L - x) * L) * (s - x);
+        // exact: M(s) = Ra*s; after load = Ra*s - P*(s-x) where P = Ra*L/(L-x)... use direct:
+        pts.push({ s, m: s <= x ? Ra * s : Ra * x - (Ra * x / x) * (s - x) });
+      }
+      // Simplest exact: M(s)= Ra*s (s<=x),  Rb*(L-s) (s>x)
+      const Rb = (Mmax / x) * L / L * x / x;   // back-calc: Mmax=Ra*x, so Ra=Mmax/x; Rb = Mmax/(L-x)
+      const RaV = Mmax / x;
+      const RbV = Mmax / (L - x);
+      const exactPts = [];
+      for (let i = 0; i <= nPts; i++) {
+        const s = (i / nPts) * L;
+        const m = s <= x ? RaV * s : RbV * (L - s);
+        exactPts.push({ s, m });
+      }
+
+      // fill
+      ctx.fillStyle = 'rgba(160,100,240,0.18)';
+      ctx.beginPath();
+      ctx.moveTo(pad.left, baseY);
+      for (const p of exactPts) ctx.lineTo(xPx(p.s), mPx(p.m));
+      ctx.lineTo(pad.left + gW, baseY);
+      ctx.closePath();
+      ctx.fill();
+
+      // outline
+      ctx.strokeStyle = '#a064f0'; ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, baseY);
+      for (const p of exactPts) ctx.lineTo(xPx(p.s), mPx(p.m));
+      ctx.lineTo(pad.left + gW, baseY);
+      ctx.stroke();
+
+      // ── annotations ──────────────────────────────────────────────────
+      const xPeak = xPx(x);
+      const yPeak = mPx(Mmax);
+      ctx.fillStyle = '#a064f0';
+      ctx.font = 'bold 11px "Share Tech Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${(Mmax/1e6).toFixed(1)} kN·m`, xPeak, yPeak - 6);
+
+      // dashed drop line
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = 'rgba(160,100,240,0.4)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(xPeak, yPeak); ctx.lineTo(xPeak, baseY); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // axis label
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.font = '10px "Barlow", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('M (kN·m)', pad.left - 28, pad.top + gH / 2);
+
+      // x-axis labels
+      ctx.fillStyle = 'rgba(255,255,255,0.30)';
+      ctx.font = '9px "Barlow", sans-serif';
+      ctx.textAlign = 'left';  ctx.fillText('0', pad.left, H - pad.bot + 26);
+      ctx.textAlign = 'right'; ctx.fillText(`${(L/1000).toFixed(1)} m`, pad.left + gW, H - pad.bot + 26);
+
+      // x label
+      ctx.fillStyle = '#f0a500';
+      ctx.font = '10px "Barlow", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`x = ${(x/1000).toFixed(2)} m`, xPeak, beamY - 32);
+
+      // title
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = 'bold 10px "Barlow Condensed", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('BENDING MOMENT DIAGRAM', W / 2, pad.top - 8);
+    }
+
+    function _triangle(ctx, px, py, size, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(px - size, py + size * 1.4);
+      ctx.lineTo(px + size, py + size * 1.4);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function _arrowHead(ctx, px, py, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(px, py + 6);
+      ctx.lineTo(px - 5, py - 2);
+      ctx.lineTo(px + 5, py - 2);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Redraw whenever L or x input changes
+    ['inp-L', 'inp-x', 'inp-P'].forEach(id => {
+      document.getElementById(id).addEventListener('input', drawDiagrams);
+    });
+
+    // Initial draw on load
+    window.addEventListener('load', drawDiagrams);
+    // Also redraw on resize
+    window.addEventListener('resize', drawDiagrams);
+    </script>
 
     <div id="error-banner" class="error-banner hidden"></div>
 
@@ -260,10 +647,8 @@
   //  CONSTANTS
   // ═══════════════════════════════════════════════════════════════════
   const SY         = 250;       // MPa  yield strength IS 2062 E250
-  const FOS        = 1.25;
   const G_NperT    = 9810;      // N per tonne
   const E_MOD      = 210000;    // N/mm²  modulus of elasticity
-  const TAU_ALL_TR = SY / (2 * FOS);   // = 100 MPa  Tresca shear allowable
 
   // ═══════════════════════════════════════════════════════════════════
   //  CORE FORMULA: Closed-form B from I_req  (three-thickness variant)
@@ -306,35 +691,30 @@
   //  ALLOWABLE BENDING STRESS  (thickness-governed by governing t)
   //  Uses the maximum of t1, t2, t3 as the governing thickness.
   // ═══════════════════════════════════════════════════════════════════
-  function allowableBendingStress(t1, t2, t3) {
+  function allowableBendingStress(t1, t2, t3, FOS) {
     const t_gov = Math.max(t1, t2, t3);
-    if (t_gov <= 20)      return 250 / 1.2;   // ≈ 208.33 MPa
-    else if (t_gov <= 40) return 240 / 1.2;   // = 200 MPa
-    else                  return 230 / 1.2;   // ≈ 191.67 MPa
+    if (t_gov <= 20)      return 250 / FOS;
+    else if (t_gov <= 40) return 240 / FOS;
+    else                  return 230 / FOS;
   }
 
   // ═══════════════════════════════════════════════════════════════════
   //  DEFLECTION at load point x  (simply supported, point load P at x)
-  //  δ(x) = P·(L−x)·x · [L + (L−x) − (L−x)²/L − x] / (6·E·I·L)
-  //  Simplified standard form:
-  //  δ_x = P·(L−x)·x·(2L − (L−x) − x) / (6·E·I·L)   [only valid at x]
-  //  Exact formula at the load point:
-  //  δ_x = P·b·x·(L²−b²−x²) / (6·E·I·L)  where b = L−x, x ≤ b
-  //  (covers both cases by symmetry)
+  //  δ_x = P·a²·b² / (3·E·I·L)
   // ═══════════════════════════════════════════════════════════════════
   function deflectionAtLoad(P_N, L, x, E, I) {
     const a = x;
     const b = L - x;
-    // Standard textbook formula for deflection at the load point:
-    //   δ = P·a²·b² / (3·E·I·L)
     return (P_N * a ** 2 * b ** 2) / (3 * E * I * L);
   }
 
   // ═══════════════════════════════════════════════════════════════════
   //  MAIN CALC ENGINE
   // ═══════════════════════════════════════════════════════════════════
-  function calc(L, x, t1, t2, t3, P_tonnes, H) {
-    const P_N   = P_tonnes * G_NperT;
+  function calc(L, x, t1, t2, t3, P_tonnes, H, FOS, FOS_load) {
+    const TAU_ALL_TR = SY / (2 * FOS);   // Tresca shear allowable
+
+    const P_N   = P_tonnes * G_NperT * FOS_load;
     const a     = x;
     const b_len = L - x;
 
@@ -352,7 +732,7 @@
     const tau   = V_max / A_w;              // average web shear stress
 
     // Allowable bending stress (IS 2062, thickness-dependent)
-    const S_ALL = allowableBendingStress(t1, t2, t3);
+    const S_ALL = allowableBendingStress(t1, t2, t3, FOS);
 
     // ── Theory 1: Pure Bending ──────────────────────────────────────
     const I_req_bend = M_max * (H / 2) / S_ALL;
@@ -407,7 +787,7 @@
     }
 
     return {
-      P_N, R_A, R_B, V_max, M_max, hi, A_w, tau, S_ALL,
+      P_N, R_A, R_B, V_max, M_max, hi, A_w, tau, S_ALL, TAU_ALL_TR,
       I_req_bend, B_bend,
       s_allow_vm, I_req_vm, B_vm,
       s_allow_tr, I_req_tr, B_tr,
@@ -458,6 +838,9 @@
     const t3       = parseFloat(document.getElementById('inp-t3').value);
     const P_tonnes = parseFloat(document.getElementById('inp-P').value);
     const H        = parseFloat(document.getElementById('inp-H').value);
+    const FOS      = parseFloat(document.getElementById('inp-fos').value);
+    const FOS_load = parseFloat(document.getElementById('inp-fos-load').value);
+    
 
     // ── Validation ──────────────────────────────────────────────────
     const errs = [];
@@ -470,6 +853,8 @@
     if (!isNaN(t2) && !isNaN(t3) && !isNaN(H) && (t2 + t3) >= H)
       errs.push(`t₂ + t₃ = ${t2 + t3} mm ≥ H = ${H} mm. Inner height would be ≤ 0.`);
     if (isNaN(P_tonnes) || P_tonnes < 0.1)      errs.push('Load P must be ≥ 0.1 tonnes.');
+    if (isNaN(FOS) || FOS < 1.0)                errs.push('FOS must be ≥ 1.0.');
+    if (isNaN(FOS_load) || FOS_load < 1.0)      errs.push('FOS_load must be ≥ 1.0.');
 
     if (errs.length) {
       errBanner.innerHTML = '⚠ ' + errs.join('<br>⚠ ');
@@ -478,7 +863,7 @@
       return;
     }
 
-    const r = calc(L, x, t1, t2, t3, P_tonnes, H);
+    const r = calc(L, x, t1, t2, t3, P_tonnes, H, FOS, FOS_load);
 
     // ── Feasibility hero ─────────────────────────────────────────────
     const feasible = r.B_gov > 0 && isFinite(r.B_gov) && !isNaN(r.B_des);
@@ -512,7 +897,7 @@
     set('d-bi',    feasible ? `${(r.B_des - 2*t1).toFixed(1)} mm` : '—');
     set('d-Aw',    `${r.A_w.toFixed(1)} mm²`);
     set('d-tau',   `${r.tau.toFixed(4)} MPa`);
-    set('d-tauall',`${TAU_ALL_TR.toFixed(2)} MPa`);
+    set('d-tauall',`${r.TAU_ALL_TR.toFixed(2)} MPa`);
 
     // ── Failure theories ──────────────────────────────────────────────
     set('th-sall-bend',  `${r.S_ALL.toFixed(2)}`);
@@ -539,16 +924,16 @@
       set('sv-sigb-ok',  statusPill(r.sig_b <= r.S_ALL + 0.05));
 
       set('sv-tau',      fN(r.tau, 4));
-      set('sv-tau-lim',  TAU_ALL_TR.toFixed(2));
-      set('sv-tau-ok',   statusPill(r.tau <= TAU_ALL_TR + 0.05));
+      set('sv-tau-lim',  r.TAU_ALL_TR.toFixed(2));
+      set('sv-tau-ok',   statusPill(r.tau <= r.TAU_ALL_TR + 0.05));
 
       set('sv-vm',       fN(r.sig_vm, 3));
       set('sv-vm-lim',   r.S_ALL.toFixed(2));
       set('sv-vm-ok',    statusPill(r.sig_vm <= r.S_ALL + 0.05));
 
       set('sv-tr',       fN(r.tau_max_tr, 3));
-      set('sv-tr-lim',   TAU_ALL_TR.toFixed(2));
-      set('sv-tr-ok',    statusPill(r.tau_max_tr <= TAU_ALL_TR + 0.05));
+      set('sv-tr-lim',   r.TAU_ALL_TR.toFixed(2));
+      set('sv-tr-ok',    statusPill(r.tau_max_tr <= r.TAU_ALL_TR + 0.05));
     } else {
       stressSec.style.display = 'none';
     }
@@ -558,7 +943,7 @@
     tbody.innerHTML = '';
     for (let tv = 8; tv <= 63; tv++) {
       if ((t2 + t3) >= H) break;       
-      const rv        = calc(L, x, tv, t2, t3, P_tonnes, H);
+      const rv        = calc(L, x, tv, t2, t3, P_tonnes, H, FOS, FOS_load);
       const highlight = tv === t1 ? ' class="highlight-row"' : '';
       const bDesStr   = rv.B_des > 0 && isFinite(rv.B_des) && !isNaN(rv.B_des)
         ? Math.round(rv.B_des)
