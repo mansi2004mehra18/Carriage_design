@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,6 +8,221 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+
+ 
+<style>
+  /* ── Check Our Estimates section styles (Dark Theme Overhaul) ──────────────────────── */
+  .check-estimates-card {
+    border: 1px solid rgba(0, 200, 180, 0.25);
+    background: linear-gradient(135deg, rgba(14, 24, 27, 0.95) 0%, rgba(10, 17, 19, 0.98) 100%);
+    position: relative;
+    overflow: hidden;
+    color: #e0e6e8;
+    padding: 24px;
+    border-radius: 8px;
+  }
+  .check-estimates-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00c8b4, transparent);
+  }
+  .check-estimates-card .card-num {
+    background: linear-gradient(135deg, #00c8b4, #00e5cc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .est-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .est-section-label {
+    grid-column: 1 / -1;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #00c8b4;
+    padding: 6px 0 3px;
+    border-bottom: 1px solid rgba(0, 200, 180, 0.25);
+    margin-top: 12px;
+  }
+  
+  /* Input Group Layout & Styling Overrides */
+  .check-estimates-card .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .check-estimates-card .input-group label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+  }
+  .check-estimates-card .input-wrap {
+    display: flex;
+    position: relative;
+    align-items: center;
+  }
+  .check-estimates-card .input-wrap input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 200, 180, 0.3);
+    border-radius: 4px;
+    padding: 8px 36px 8px 10px;
+    color: #ffffff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .check-estimates-card .input-wrap input:focus {
+    border-color: #00c8b4;
+    box-shadow: 0 0 8px rgba(0, 200, 180, 0.3);
+    background: rgba(0, 0, 0, 0.6);
+  }
+  .check-estimates-card .input-wrap .unit {
+    position: absolute;
+    right: 10px;
+    font-size: 0.75rem;
+    color: rgba(0, 200, 180, 0.7);
+    pointer-events: none;
+  }
+  .check-estimates-card .input-group small {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.2;
+  }
+
+  /* Results strip */
+  .est-results-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0 16px;
+  }
+  .est-kpi {
+    flex: 1 1 140px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 200, 180, 0.22);
+    border-radius: 6px;
+    padding: 12px 14px;
+    text-align: center;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+  .est-kpi .est-kpi-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.35rem;
+    color: #00e5cc;
+    line-height: 1.1;
+    margin-bottom: 4px;
+    text-shadow: 0 0 6px rgba(0, 229, 204, 0.2);
+  }
+  .est-kpi .est-kpi-lbl {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  /* Stress verdict banner */
+  .est-verdict {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin-top: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    font-size: 1rem;
+  }
+  .est-verdict.pass {
+    background: rgba(39, 174, 96, 0.15);
+    border: 1px solid rgba(46, 204, 113, 0.4);
+    color: #2ecc71;
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.05);
+  }
+  .est-verdict.fail {
+    background: rgba(192, 41, 43, 0.15);
+    border: 1px solid rgba(231, 76, 60, 0.4);
+    color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.05);
+  }
+  .est-verdict-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+  .est-verdict-body strong {
+    display: block;
+    font-size: 1.05rem;
+  }
+  .est-verdict-body span {
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+  }
+
+  /* Formula note in estimates */
+  .est-formula-note {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid rgba(0, 200, 180, 0.5);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.73rem;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.7;
+  }
+  .est-formula-note .fl {
+    font-family: 'Share Tech Mono', monospace;
+    color: rgba(0, 200, 180, 0.85);
+    font-size: 0.72rem;
+  }
+
+  #btn-est-calc {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #005b53 0%, #007a70 100%);
+    border: 1px solid #00c8b4;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+  }
+  #btn-est-calc:hover {
+    background: linear-gradient(135deg, #007a70 0%, #009688 100%);
+    box-shadow: 0 0 16px rgba(0, 200, 180, 0.35);
+  }
+  
+  /* Generic Error Banner handling for dark theme */
+  .error-banner {
+    background: rgba(192, 41, 43, 0.2);
+    border: 1px solid #e74c3c;
+    color: #f1948a;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+  }
+  .hidden {
+    display: none !important;
+  }
+</style>
 </head>
 <body>
 
@@ -15,12 +230,266 @@
     <div class="header-inner">
       <div class="header-badge">IS 2062 · E250 BR · v2</div>
       <h1>Carriage Beam <span>Design Calculator</span></h1>
-      <p class="header-sub">Hollow Rectangular Box Section · Ladle Carriage Car · Steel Plant</p>
+      <p class="header-sub">Hollow Rectangular Box Section · Ladle Carriage Car </p>
     </div>
   </header>
 
   <main>
 
+    <section class="card check-estimates-card">
+      <h2 class="card-title"><span class="card-num">⊞</span> Check Our Estimates(This check is for Pure Bending)</h2>
+      <!-- <p style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin:-4px 0 16px;letter-spacing:0.02em;">
+        Enter a known / trial section and load to instantly verify bending stress and deflection.
+        Uses symmetric box formulae — independent of the design solver below.
+      </p> -->
+
+      <div class="est-grid">
+
+        <div class="est-section-label">Section Geometry</div>
+
+        <div class="input-group">
+          <label for="est-B">Breadth <em>B</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-B" value="500" min="10" step="5" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Outer width of box section</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-H">Height <em>H</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-H" value="850" min="10" step="5" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Outer height of box section</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-t1">Web thickness <em>t₁</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-t1" value="12" min="1" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Side wall thickness (both webs)</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-t2">Top flange <em>t₂</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-t2" value="15" min="1" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Top plate thickness</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-t3">Bottom flange <em>t₃</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-t3" value="25" min="1" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Bottom plate thickness</small>
+        </div>
+
+        <div class="est-section-label">Loading &amp; Span</div>
+
+        <div class="input-group">
+          <label for="est-P">Load <em>P</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-P" value="150" min="0.1" step="1" />
+            <span class="unit">tonnes</span>
+          </div>
+          <small>Applied point load</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-L">Span <em>L</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-L" value="7800" min="100" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Centre-to-centre of supports</small>
+        </div>
+
+        <div class="est-section-label">Safety Factors</div>
+
+        <div class="input-group">
+          <label for="est-fos">FOS (stress) <em>FOS</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-fos" value="1.25" min="1.0" step="0.05" />
+            <span class="unit">—</span>
+          </div>
+          <small>Allowable = σ<sub>y</sub> / FOS</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-fos-load">FOS (load) <em>FOS_load</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-fos-load" value="1.0" min="1.0" step="0.05" />
+            <span class="unit">—</span>
+          </div>
+          <small>Load multiplier before calc</small>
+        </div>
+
+      </div>
+
+      <button id="btn-est-calc" onclick="runEstimateCheck()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Check Estimates
+      </button>
+
+      <div class="est-results-strip" id="est-results-strip" style="display:none;">
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-I">—</div>
+          <div class="est-kpi-lbl">I<sub>xx</sub> (×10⁹ mm⁴)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-Z">—</div>
+          <div class="est-kpi-lbl">Z (×10⁶ mm³)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-Mmax">—</div>
+          <div class="est-kpi-lbl">M<sub>max</sub> (kN·m)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-sig">—</div>
+          <div class="est-kpi-lbl">σ<sub>b</sub> (MPa)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-sall">—</div>
+          <div class="est-kpi-lbl">σ<sub>allow</sub> (MPa)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-defl">—</div>
+          <div class="est-kpi-lbl">δ<sub>mid</sub> (mm)</div>
+        </div>
+      </div>
+
+      <div class="est-verdict" id="est-verdict">
+        <div class="est-verdict-icon" id="est-verdict-icon">✓</div>
+        <div class="est-verdict-body">
+          <strong id="est-verdict-title">—</strong>
+          <span id="est-verdict-sub">—</span>
+        </div>
+      </div>
+
+      <div class="est-formula-note">
+        <span class="fl">Moment of Inertia (symmetric box):</span>
+        &nbsp; I = 1/12 · [ B·H³ − (B − 2t₁) · (H − t₂ − t₃)³ ]
+        <br>
+        <span class="fl">Deflection (midspan, UDL equiv. point load):</span>
+        &nbsp; δ = P·L³ / (48·E·I)
+        <br>
+        <span class="fl">Allowable bending stress:</span>
+        &nbsp; σ<sub>allow</sub> = σ<sub>y</sub> / FOS &nbsp; [σ<sub>y</sub> = 250 MPa for IS 2062 E250 BR]
+        <br>
+        <!-- <span style="color:rgba(255,255,255,0.35);font-size:0.68rem;">
+          Note: I formula uses actual top/bottom flange thicknesses (t₂, t₃); inner height = H − t₂ − t₃. 
+          Deflection assumes load at midspan (L/2).
+        </span> -->
+      </div>
+
+      <div id="est-error" class="error-banner hidden" style="margin-top:12px;"></div>
+    </section>
+
+    <script>
+    function runEstimateCheck() {
+      const estErr = document.getElementById('est-error');
+      estErr.classList.add('hidden');
+
+      const B        = parseFloat(document.getElementById('est-B').value);
+      const H        = parseFloat(document.getElementById('est-H').value);
+      const t1       = parseFloat(document.getElementById('est-t1').value);
+      const t2       = parseFloat(document.getElementById('est-t2').value);
+      const t3       = parseFloat(document.getElementById('est-t3').value);
+      const P_t      = parseFloat(document.getElementById('est-P').value);
+      const L        = parseFloat(document.getElementById('est-L').value);
+      const FOS      = parseFloat(document.getElementById('est-fos').value);
+      const FOS_load = parseFloat(document.getElementById('est-fos-load').value);
+
+      // Validation
+      const errs = [];
+      if (isNaN(B)  || B  <= 0)               errs.push('Breadth B must be > 0 mm.');
+      if (isNaN(H)  || H  <= 0)               errs.push('Height H must be > 0 mm.');
+      if (isNaN(t1) || t1 <= 0)               errs.push('Web thickness t₁ must be > 0 mm.');
+      if (isNaN(t2) || t2 <= 0)               errs.push('Top flange t₂ must be > 0 mm.');
+      if (isNaN(t3) || t3 <= 0)               errs.push('Bottom flange t₃ must be > 0 mm.');
+      if (!isNaN(t2) && !isNaN(t3) && !isNaN(H) && (t2 + t3) >= H)
+        errs.push(`t₂ + t₃ = ${t2 + t3} mm ≥ H = ${H} mm. Inner height would be ≤ 0.`);
+      if (!isNaN(t1) && !isNaN(B) && (2 * t1) >= B)
+        errs.push(`2·t₁ = ${2*t1} mm ≥ B = ${B} mm. Inner width would be ≤ 0.`);
+      if (isNaN(P_t) || P_t <= 0)             errs.push('Load P must be > 0 tonnes.');
+      if (isNaN(L)   || L  <= 0)              errs.push('Span L must be > 0 mm.');
+      if (isNaN(FOS) || FOS < 1.0)            errs.push('FOS must be ≥ 1.0.');
+      if (isNaN(FOS_load) || FOS_load < 1.0)  errs.push('FOS_load must be ≥ 1.0.');
+
+      if (errs.length) {
+        estErr.innerHTML = '⚠ ' + errs.join('<br>⚠ ');
+        estErr.classList.remove('hidden');
+        document.getElementById('est-results-strip').style.display = 'none';
+        document.getElementById('est-verdict').style.display = 'none';
+        return;
+      }
+
+      const G_NperT = 9810;    // N per tonne
+      const E_MOD   = 210000;  // N/mm²
+       // Find the maximum governing plate thickness
+const t_f = Math.max(t2, t3, t1);
+let SY = 250; // Default fallback
+
+// Correct IS 2062 yield strength reduction based on nominal thickness
+if (t_f <= 20) {
+  SY = 250;
+} else if (t_f > 20 && t_f <= 40) {
+  SY = 240;
+} else if (t_f > 40) {
+  SY = 230;
+}
+
+
+      const P_N = P_t * G_NperT * FOS_load;
+
+      const h_inner = H - t2 - t3;
+      const b_inner = B - 2 * t1;
+      const I_xx = (1 / 12) * (B * Math.pow(H, 3) - b_inner * Math.pow(h_inner, 3));
+
+      const Z = I_xx / (H / 2);
+      const M_max = P_N * L / 4;
+      const sig_b = M_max / Z;
+      const sig_allow = SY / FOS;
+      const defl = (P_N * Math.pow(L, 3)) / (48 * E_MOD * I_xx);
+
+      document.getElementById('est-results-strip').style.display = 'flex';
+
+      document.getElementById('est-kv-I').textContent    = (I_xx / 1e9).toFixed(4);
+      document.getElementById('est-kv-Z').textContent    = (Z    / 1e6).toFixed(4);
+      document.getElementById('est-kv-Mmax').textContent = (M_max / 1e6).toFixed(3);
+      document.getElementById('est-kv-sig').textContent  = sig_b.toFixed(3);
+      document.getElementById('est-kv-sall').textContent = sig_allow.toFixed(2);
+      document.getElementById('est-kv-defl').textContent = defl.toFixed(3);
+
+      const verdict  = document.getElementById('est-verdict');
+      const vIcon    = document.getElementById('est-verdict-icon');
+      const vTitle   = document.getElementById('est-verdict-title');
+      const vSub     = document.getElementById('est-verdict-sub');
+
+      const ratio    = sig_b / sig_allow;
+      const pass     = sig_b <= sig_allow;
+
+      verdict.style.display = 'flex';
+      verdict.className     = 'est-verdict ' + (pass ? 'pass' : 'fail');
+      vIcon.textContent     = pass ? 'Passed' : 'Failed';
+      vTitle.textContent    = pass
+        ? 'STRESS CHECK PASSED — Section is adequate'
+        : 'STRESS CHECK FAILED — Section is overstressed';
+      vSub.textContent      = `σ_b = ${sig_b.toFixed(3)} MPa  ${pass ? '≤' : '>'}  σ_allow = ${sig_allow.toFixed(2)} MPa   )`;
+    }
+    </script>
+
+```
+
+    <!-- ── SFD / BMD Diagrams ──────────────────────────────────────── -->
     <section class="card input-card">
       <h2 class="card-title"><span class="card-num">01</span> Design Parameters</h2>
 
@@ -261,16 +730,13 @@
       _arrowHead(ctx, xLoadPx, beamY - 2, '#f0a500');
 
       // ── SFD fill & outline ──────────────────────────────────────────
-      // Left of load: V = +Ra (above zero line)
-      // Right of load: V = −Rb (below zero line)
-      const y0     = baseY;            // zero
-      const yRa    = vPx(Ra);          // + Ra above
-      const yNegRb = vPx(-Rb);         // − Rb below
+      const y0     = baseY;
+      const yRa    = vPx(Ra);
+      const yNegRb = vPx(-Rb);
       const xLoad  = xPx(x);
       const xL0    = pad.left;
       const xLEnd  = pad.left + gW;
 
-      // positive region fill
       ctx.fillStyle = 'rgba(74,220,130,0.18)';
       ctx.beginPath();
       ctx.moveTo(xL0,   y0);
@@ -280,7 +746,6 @@
       ctx.closePath();
       ctx.fill();
 
-      // negative region fill
       ctx.fillStyle = 'rgba(220,74,74,0.18)';
       ctx.beginPath();
       ctx.moveTo(xLoad, y0);
@@ -290,7 +755,6 @@
       ctx.closePath();
       ctx.fill();
 
-      // outline
       ctx.strokeStyle = '#4adc82'; ctx.lineWidth = 2.2;
       ctx.beginPath();
       ctx.moveTo(xL0,   y0);
@@ -301,7 +765,6 @@
       ctx.lineTo(xLEnd, y0);
       ctx.stroke();
 
-      // ── annotations ──────────────────────────────────────────────────
       ctx.fillStyle = '#4adc82';
       ctx.font = 'bold 11px "Share Tech Mono", monospace';
       ctx.textAlign = 'left';
@@ -311,25 +774,21 @@
       ctx.textAlign = 'right';
       ctx.fillText(`−${(Rb/9810).toFixed(1)} t`, xLEnd - 4, yNegRb + 12);
 
-      // x label
       ctx.fillStyle = '#f0a500';
       ctx.font = '10px "Barlow", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(`x = ${(x/1000).toFixed(2)} m`, xLoad, beamY - 32);
 
-      // axis label
       ctx.fillStyle = 'rgba(255,255,255,0.35)';
       ctx.font = '10px "Barlow", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('V (kN)', pad.left - 28, pad.top + gH / 2);
 
-      // x-axis labels
       ctx.fillStyle = 'rgba(255,255,255,0.30)';
       ctx.font = '9px "Barlow", sans-serif';
       ctx.textAlign = 'left';  ctx.fillText('0', pad.left, H - pad.bot + 26);
       ctx.textAlign = 'right'; ctx.fillText(`${(L/1000).toFixed(1)} m`, pad.left + gW, H - pad.bot + 26);
 
-      // title
       ctx.fillStyle = 'rgba(255,255,255,0.55)';
       ctx.font = 'bold 10px "Barlow Condensed", sans-serif';
       ctx.textAlign = 'center';
@@ -344,11 +803,10 @@
       const gH  = H - pad.top  - pad.bot;
 
       const scaleY = (gH * 0.78) / Mmax;
-      const baseY  = pad.top + gH;          // BMD drawn downward (sagging positive)
+      const baseY  = pad.top + gH;
       const xPx    = v => pad.left + (v / L) * gW;
-      const mPx    = v => baseY - v * scaleY;  // moment → px (positive = downward sagging)
+      const mPx    = v => baseY - v * scaleY;
 
-      // ── grid ────────────────────────────────────────────────────────
       ctx.strokeStyle = 'rgba(255,255,255,0.05)';
       ctx.lineWidth   = 1;
       for (let i = 0; i <= 4; i++) {
@@ -356,42 +814,23 @@
         ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + gW, y); ctx.stroke();
       }
 
-      // ── zero axis (top) ─────────────────────────────────────────────
       ctx.strokeStyle = 'rgba(255,255,255,0.22)';
       ctx.lineWidth   = 1;
       ctx.beginPath();
       ctx.moveTo(pad.left, baseY); ctx.lineTo(pad.left + gW, baseY); ctx.stroke();
 
-      // ── beam baseline ───────────────────────────────────────────────
       const beamY = H - pad.bot + 12;
       ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 3;
       ctx.beginPath(); ctx.moveTo(pad.left, beamY); ctx.lineTo(pad.left + gW, beamY); ctx.stroke();
       _triangle(ctx, pad.left, beamY, 8, '#4a90d9');
       _triangle(ctx, pad.left + gW, beamY, 8, '#4a90d9');
 
-      // load arrow
       const xLoadPx = xPx(x);
       ctx.strokeStyle = '#f0a500'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(xLoadPx, beamY - 28); ctx.lineTo(xLoadPx, beamY - 2); ctx.stroke();
       _arrowHead(ctx, xLoadPx, beamY - 2, '#f0a500');
 
-      // ── BMD parabolic shape (two straight lines for point load) ─────
       const nPts = 80;
-      const pts  = [];
-      for (let i = 0; i <= nPts; i++) {
-        const s  = (i / nPts) * L;
-        const m  = s <= x
-          ? Ra * s
-          : Ra * s - (Ra + (Mmax / x - Ra)) * (s - x);   // simplified: Ra·s − P·(s−x)
-        // cleaner: M(s) = Ra*s for s<=x; Ra*s - P*(s-x) for s>x
-        const mVal = s <= x
-          ? Ra * s
-          : Ra * s - (Ra / (L - x) * L) * (s - x);
-        // exact: M(s) = Ra*s; after load = Ra*s - P*(s-x) where P = Ra*L/(L-x)... use direct:
-        pts.push({ s, m: s <= x ? Ra * s : Ra * x - (Ra * x / x) * (s - x) });
-      }
-      // Simplest exact: M(s)= Ra*s (s<=x),  Rb*(L-s) (s>x)
-      const Rb = (Mmax / x) * L / L * x / x;   // back-calc: Mmax=Ra*x, so Ra=Mmax/x; Rb = Mmax/(L-x)
       const RaV = Mmax / x;
       const RbV = Mmax / (L - x);
       const exactPts = [];
@@ -401,7 +840,6 @@
         exactPts.push({ s, m });
       }
 
-      // fill
       ctx.fillStyle = 'rgba(160,100,240,0.18)';
       ctx.beginPath();
       ctx.moveTo(pad.left, baseY);
@@ -410,7 +848,6 @@
       ctx.closePath();
       ctx.fill();
 
-      // outline
       ctx.strokeStyle = '#a064f0'; ctx.lineWidth = 2.2;
       ctx.beginPath();
       ctx.moveTo(pad.left, baseY);
@@ -418,7 +855,6 @@
       ctx.lineTo(pad.left + gW, baseY);
       ctx.stroke();
 
-      // ── annotations ──────────────────────────────────────────────────
       const xPeak = xPx(x);
       const yPeak = mPx(Mmax);
       ctx.fillStyle = '#a064f0';
@@ -426,31 +862,26 @@
       ctx.textAlign = 'center';
       ctx.fillText(`${(Mmax/1e6).toFixed(1)} kN·m`, xPeak, yPeak - 6);
 
-      // dashed drop line
       ctx.setLineDash([3, 3]);
       ctx.strokeStyle = 'rgba(160,100,240,0.4)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(xPeak, yPeak); ctx.lineTo(xPeak, baseY); ctx.stroke();
       ctx.setLineDash([]);
 
-      // axis label
       ctx.fillStyle = 'rgba(255,255,255,0.35)';
       ctx.font = '10px "Barlow", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('M (kN·m)', pad.left - 28, pad.top + gH / 2);
 
-      // x-axis labels
       ctx.fillStyle = 'rgba(255,255,255,0.30)';
       ctx.font = '9px "Barlow", sans-serif';
       ctx.textAlign = 'left';  ctx.fillText('0', pad.left, H - pad.bot + 26);
       ctx.textAlign = 'right'; ctx.fillText(`${(L/1000).toFixed(1)} m`, pad.left + gW, H - pad.bot + 26);
 
-      // x label
       ctx.fillStyle = '#f0a500';
       ctx.font = '10px "Barlow", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(`x = ${(x/1000).toFixed(2)} m`, xPeak, beamY - 32);
 
-      // title
       ctx.fillStyle = 'rgba(255,255,255,0.55)';
       ctx.font = 'bold 10px "Barlow Condensed", sans-serif';
       ctx.textAlign = 'center';
@@ -536,6 +967,262 @@
             </tbody>
           </table>
         </section>
+
+
+        <!-- ── Section Cross-Section & Beam Elevation Diagrams ──────── -->
+        <section class="card span-2 vis-diagrams-card">
+          <h2 class="card-title"><span class="card-num">◈</span> Section Visualisation</h2>
+          <div class="vis-row">
+            <div class="vis-item">
+              <div class="diagram-label">Box Section Cross-Section</div>
+              <canvas id="cs-canvas" width="420" height="300"></canvas>
+            </div>
+            <div class="vis-item">
+              <div class="diagram-label">Beam Elevation — Wheel to Wheel</div>
+              <canvas id="el-canvas" width="420" height="300"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <style>
+          .vis-diagrams-card { margin-bottom: 0; }
+          .vis-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+          }
+          .vis-item {
+            flex: 1 1 300px;
+            min-width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          #cs-canvas, #el-canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            background: #0d1117;
+            border: 1px solid rgba(255,255,255,0.07);
+            display: block;
+          }
+        </style>
+
+        <script>
+        // ── Section Visualisation renderer ───────────────────────────
+        function drawSectionVis() {
+          const Hv  = parseFloat(document.getElementById('inp-H').value)  || 850;
+          const t1v = parseFloat(document.getElementById('inp-t1').value) || 12;
+          const t2v = parseFloat(document.getElementById('inp-t2').value) || 25;
+          const t3v = parseFloat(document.getElementById('inp-t3').value) || 25;
+          const Lv  = parseFloat(document.getElementById('inp-L').value)  || 7800;
+          const Braw = parseFloat(document.getElementById('kpi-B')?.querySelector('.kpi-val')?.textContent);
+          const Bv   = (isFinite(Braw) && Braw > 0) ? Braw : Math.round(Hv * 0.55 / 5) * 5;
+
+          _drawCrossSection(document.getElementById('cs-canvas'), Bv, Hv, t1v, t2v, t3v);
+          _drawElevation(document.getElementById('el-canvas'), Lv, Hv);
+        }
+
+        function _csSetup(canvas) {
+          const dpr = window.devicePixelRatio || 1;
+          const W   = canvas.offsetWidth  || 420;
+          const H   = canvas.offsetHeight || 300;
+          canvas.width  = W * dpr;
+          canvas.height = H * dpr;
+          const ctx = canvas.getContext('2d');
+          ctx.scale(dpr, dpr);
+          ctx.clearRect(0, 0, W, H);
+          return { ctx, W, H };
+        }
+
+        function _drawCrossSection(canvas, B, H, t1, t2, t3) {
+          const { ctx, W: CW, H: CH } = _csSetup(canvas);
+
+          const pad = 42;
+          const scaleX = (CW - pad * 2) / B;
+          const scaleY = (CH - pad * 2) / H;
+          const sc     = Math.min(scaleX, scaleY);
+
+          const drawW  = B * sc;
+          const drawH  = H * sc;
+          const ox     = (CW - drawW) / 2;
+          const oy     = (CH - drawH) / 2;
+
+          const bi  = B - 2 * t1;
+          const hi  = H - t2 - t3;
+          const biD = bi * sc;
+          const hiD = hi * sc;
+          const ixO = ox + t1 * sc;
+          const iyO = oy + t2 * sc;
+
+          ctx.fillStyle = 'rgba(74,144,217,0.22)';
+          ctx.fillRect(ox, oy, drawW, drawH);
+
+          ctx.save();
+          ctx.globalCompositeOperation = 'destination-out';
+          if (bi > 0 && hi > 0) ctx.fillRect(ixO, iyO, biD, hiD);
+          ctx.restore();
+
+          ctx.strokeStyle = '#4a90d9';
+          ctx.lineWidth   = 2;
+          ctx.strokeRect(ox, oy, drawW, drawH);
+
+          if (bi > 0 && hi > 0) {
+            ctx.strokeStyle = 'rgba(74,144,217,0.5)';
+            ctx.lineWidth   = 1;
+            ctx.strokeRect(ixO, iyO, biD, hiD);
+          }
+
+          ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+          ctx.lineWidth   = 1;
+          ctx.setLineDash([4, 4]);
+          const cx = ox + drawW / 2, cy = oy + drawH / 2;
+          ctx.beginPath(); ctx.moveTo(ox - 8, cy); ctx.lineTo(ox + drawW + 8, cy); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(cx, oy - 8); ctx.lineTo(cx, oy + drawH + 8); ctx.stroke();
+          ctx.setLineDash([]);
+
+          const DIM_COL    = '#f0a500';
+          const DIM_INNER  = 'rgba(255,255,255,0.45)';
+          const FONT_DIM   = 'bold 10px "Share Tech Mono", monospace';
+          const FONT_SMALL = '9px "Share Tech Mono", monospace';
+
+          _dimLine(ctx, ox, oy - 14, ox + drawW, oy - 14, DIM_COL);
+          ctx.fillStyle = DIM_COL; ctx.font = FONT_DIM; ctx.textAlign = 'center';
+          ctx.fillText(`B = ${Math.round(B)} mm`, cx, oy - 18);
+
+          _dimLineV(ctx, ox + drawW + 16, oy, ox + drawW + 16, oy + drawH, DIM_COL);
+          ctx.save(); ctx.translate(ox + drawW + 30, cy);
+          ctx.rotate(-Math.PI / 2);
+          ctx.fillStyle = DIM_COL; ctx.font = FONT_DIM; ctx.textAlign = 'center';
+          ctx.fillText(`H = ${Math.round(H)} mm`, 0, 0);
+          ctx.restore();
+
+          if (bi > 0 && hi > 0) {
+            const iyBot = iyO + hiD;
+            _dimLine(ctx, ixO, iyBot + 10, ixO + biD, iyBot + 10, DIM_INNER);
+            ctx.fillStyle = DIM_INNER; ctx.font = FONT_SMALL; ctx.textAlign = 'center';
+            ctx.fillText(`b−2t₁ = ${Math.round(bi)}`, cx, iyBot + 22);
+
+            _dimLineV(ctx, ixO - 12, iyO, ixO - 12, iyO + hiD, DIM_INNER);
+            ctx.save(); ctx.translate(ixO - 24, cy);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = DIM_INNER; ctx.font = FONT_SMALL; ctx.textAlign = 'center';
+            ctx.fillText(`h−t₂−t₃ = ${Math.round(hi)}`, 0, 0);
+            ctx.restore();
+          }
+
+          ctx.fillStyle = 'rgba(240,165,0,0.7)';
+          ctx.font = '9px "Share Tech Mono", monospace';
+          ctx.textAlign = 'left';
+          ctx.fillText(`t₁=${t1}`, ox + 2, cy - 3);
+          ctx.textAlign = 'center';
+          ctx.fillText(`t₂=${t2}`, cx, oy + t2 * sc * 0.5 + 4);
+          ctx.fillText(`t₃=${t3}`, cx, oy + drawH - t3 * sc * 0.4);
+
+          ctx.fillStyle = 'rgba(255,255,255,0.45)';
+          ctx.font = 'bold 9px "Barlow Condensed", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('CROSS-SECTION', CW / 2, CW < 200 ? 10 : 12);
+        }
+
+        function _drawElevation(canvas, L, H) {
+          const { ctx, W: CW, H: CH } = _csSetup(canvas);
+
+          const pad  = { top: 44, bot: 54, left: 44, right: 44 };
+          const gW   = CW - pad.left - pad.right;
+          const gH   = CH - pad.top  - pad.bot;
+
+          const scX  = gW / L;
+          const scY  = Math.min(gH, H * scX * 6) / (H * 6);
+          const sc   = Math.min(scX, scY);
+
+          const drawL = L * sc;
+          const drawH = Math.max(H * sc, 14);
+          const ox    = (CW - drawL) / 2;
+          const oy    = CH / 2 - drawH / 2;
+
+          ctx.fillStyle = 'rgba(74,144,217,0.20)';
+          ctx.fillRect(ox, oy, drawL, drawH);
+          ctx.strokeStyle = '#4a90d9';
+          ctx.lineWidth   = 2;
+          ctx.strokeRect(ox, oy, drawL, drawH);
+
+          ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+          ctx.lineWidth   = 1; ctx.setLineDash([4, 4]);
+          ctx.beginPath(); ctx.moveTo(ox, oy + drawH / 2); ctx.lineTo(ox + drawL, oy + drawH / 2); ctx.stroke();
+          ctx.setLineDash([]);
+
+          const beamBot = oy + drawH;
+          const wR      = Math.max(10, Math.min(18, drawH * 0.45));
+          const wY      = beamBot + wR + 2;
+          [[ox, 'A'], [ox + drawL, 'B']].forEach(([wx, lbl]) => {
+            ctx.beginPath(); ctx.arc(wx, wY, wR, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(240,165,0,0.18)'; ctx.fill();
+            ctx.strokeStyle = '#f0a500'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.strokeStyle = 'rgba(240,165,0,0.5)'; ctx.lineWidth = 1;
+            for (let a = 0; a < Math.PI; a += Math.PI / 3) {
+              ctx.beginPath();
+              ctx.moveTo(wx + Math.cos(a) * wR * 0.85, wY + Math.sin(a) * wR * 0.85);
+              ctx.lineTo(wx - Math.cos(a) * wR * 0.85, wY - Math.sin(a) * wR * 0.85);
+              ctx.stroke();
+            }
+            ctx.strokeStyle = 'rgba(240,165,0,0.3)'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(wx - wR - 4, wY + wR); ctx.lineTo(wx + wR + 4, wY + wR); ctx.stroke();
+            ctx.fillStyle = '#f0a500';
+            ctx.font = 'bold 10px "Share Tech Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(`R${lbl}`, wx, wY + wR + 13);
+          });
+
+          const dimY = wY + wR + 22;
+          _dimLine(ctx, ox, dimY, ox + drawL, dimY, '#f0a500');
+          ctx.fillStyle = '#f0a500'; ctx.font = 'bold 10px "Share Tech Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`L = ${(L / 1000).toFixed(2)} m  (${Math.round(L)} mm)`, CW / 2, dimY + 12);
+
+          _dimLineV(ctx, ox + drawL + 16, oy, ox + drawL + 16, oy + drawH, '#4a90d9');
+          ctx.save(); ctx.translate(ox + drawL + 30, oy + drawH / 2);
+          ctx.rotate(-Math.PI / 2);
+          ctx.fillStyle = '#4a90d9'; ctx.font = 'bold 10px "Share Tech Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`H = ${Math.round(H)} mm`, 0, 0);
+          ctx.restore();
+
+          ctx.fillStyle = 'rgba(255,255,255,0.45)';
+          ctx.font = 'bold 9px "Barlow Condensed", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('BEAM ELEVATION — WHEEL TO WHEEL', CW / 2, 12);
+        }
+
+        function _dimLine(ctx, x1, y, x2, y2, color) {
+          const yy = y;
+          ctx.strokeStyle = color; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(x1, yy); ctx.lineTo(x2, yy); ctx.stroke();
+          [x1, x2].forEach(x => {
+            ctx.beginPath(); ctx.moveTo(x, yy - 4); ctx.lineTo(x, yy + 4); ctx.stroke();
+          });
+        }
+        function _dimLineV(ctx, x, y1, x2, y2, color) {
+          ctx.strokeStyle = color; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(x, y1); ctx.lineTo(x, y2); ctx.stroke();
+          [y1, y2].forEach(y => {
+            ctx.beginPath(); ctx.moveTo(x - 4, y); ctx.lineTo(x + 4, y); ctx.stroke();
+          });
+        }
+
+        ['inp-H', 'inp-t1', 'inp-t2', 'inp-t3', 'inp-L'].forEach(id => {
+          document.getElementById(id).addEventListener('input', drawSectionVis);
+        });
+
+        const _origRunCalc = window.runCalc;
+        window.runCalc = function() {
+          if (_origRunCalc) _origRunCalc.apply(this, arguments);
+          setTimeout(drawSectionVis, 50);
+        };
+
+        window.addEventListener('load', () => setTimeout(drawSectionVis, 80));
+        window.addEventListener('resize', drawSectionVis);
+        </script>
 
         <section class="card span-2">
           <h2 class="card-title"><span class="card-num">04</span> Failure Theories → Required Breadth B</h2>
@@ -676,7 +1363,7 @@
     const hi = H - t2 - t3;
     if (bi <= 0 || hi <= 0) return 0;
     const I_xx = (B * H ** 3 - bi * hi ** 3) / 12;
-    return I_xx / (H / 2);          // elastic modulus about NA at H/2
+    return I_xx / (H / 2);
   }
 
   // Moment of inertia for a given B
@@ -719,19 +1406,17 @@
     const b_len = L - x;
 
     // Reactions (simply supported)
-    const R_A   = P_N * b_len / L;    // left reaction
-    const R_B   = P_N * a / L;        // right reaction
-    const V_max = Math.max(R_A, R_B); // governing shear force
+    const R_A   = P_N * b_len / L;
+    const R_B   = P_N * a / L;
+    const V_max = Math.max(R_A, R_B);
 
     // Moment at load point  M = P·x·(L−x)/L
     const M_max = P_N * a * b_len / L;
 
-    // Inner height (flanges consume t2 top + t3 bottom)
     const hi    = H - t2 - t3;
-    const A_w   = 2 * t1 * H;               // web shear area (both webs)
-    const tau   = V_max / A_w;              // average web shear stress
+    const A_w   = 2 * t1 * H;
+    const tau   = V_max / A_w;
 
-    // Allowable bending stress (IS 2062, thickness-dependent)
     const S_ALL = allowableBendingStress(t1, t2, t3, FOS);
 
     // ── Theory 1: Pure Bending ──────────────────────────────────────
