@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -238,10 +238,6 @@
 
     <section class="card check-estimates-card">
       <h2 class="card-title"><span class="card-num">⊞</span> Check Our Estimates(This check is for Pure Bending)</h2>
-      <!-- <p style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin:-4px 0 16px;letter-spacing:0.02em;">
-        Enter a known / trial section and load to instantly verify bending stress and deflection.
-        Uses symmetric box formulae — independent of the design solver below.
-      </p> -->
 
       <div class="est-grid">
 
@@ -300,7 +296,7 @@
             <input type="number" id="est-P" value="150" min="0.1" step="1" />
             <span class="unit">tonnes</span>
           </div>
-          <small>Applied point load</small>
+          <small>Applied point load</small> 
         </div>
 
         <div class="input-group">
@@ -310,6 +306,15 @@
             <span class="unit">mm</span>
           </div>
           <small>Centre-to-centre of supports</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-x">Load position from left <em>x</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-x" value="3900" min="1" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>0 &lt; x &lt; L &nbsp;|&nbsp; mid = L/2</small>
         </div>
 
         <div class="est-section-label">Safety Factors</div>
@@ -330,6 +335,15 @@
             <span class="unit">—</span>
           </div>
           <small>Load multiplier before calc</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-sy">Yield strength <em>σ<sub>y</sub></em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-sy" value="250" min="100" step="5" />
+            <span class="unit">MPa</span>
+          </div>
+          <small>Override σ<sub>y</sub> for this section only (IS 2062 E250 BR = 250 MPa)</small>
         </div>
 
       </div>
@@ -362,7 +376,7 @@
         </div>
         <div class="est-kpi">
           <div class="est-kpi-val" id="est-kv-defl">—</div>
-          <div class="est-kpi-lbl">δ<sub>mid</sub> (mm)</div>
+          <div class="est-kpi-lbl">δ at x (mm)</div>
         </div>
       </div>
 
@@ -378,16 +392,15 @@
         <span class="fl">Moment of Inertia (symmetric box):</span>
         &nbsp; I = 1/12 · [ B·H³ − (B − 2t₁) · (H − t₂ − t₃)³ ]
         <br>
-        <span class="fl">Deflection (midspan, UDL equiv. point load):</span>
-        &nbsp; δ = P·L³ / (48·E·I)
+        <span class="fl">Bending moment (point load at x from left):</span>
+        &nbsp; M<sub>max</sub> = P·x·(L−x) / L
+        <br>
+        <span class="fl">Deflection at load point x:</span>
+        &nbsp; δ = P·a²·b² / (3·E·I·L) &nbsp; [a = x, b = L−x]
         <br>
         <span class="fl">Allowable bending stress:</span>
-        &nbsp; σ<sub>allow</sub> = σ<sub>y</sub> / FOS &nbsp; [σ<sub>y</sub> = 250 MPa for IS 2062 E250 BR]
+        &nbsp; σ<sub>allow</sub> = σ<sub>y</sub> / FOS &nbsp; [σ<sub>y</sub> = user-specified]
         <br>
-        <!-- <span style="color:rgba(255,255,255,0.35);font-size:0.68rem;">
-          Note: I formula uses actual top/bottom flange thicknesses (t₂, t₃); inner height = H − t₂ − t₃. 
-          Deflection assumes load at midspan (L/2).
-        </span> -->
       </div>
 
       <div id="est-error" class="error-banner hidden" style="margin-top:12px;"></div>
@@ -405,8 +418,10 @@
       const t3       = parseFloat(document.getElementById('est-t3').value);
       const P_t      = parseFloat(document.getElementById('est-P').value);
       const L        = parseFloat(document.getElementById('est-L').value);
+      const x_pos    = parseFloat(document.getElementById('est-x').value);
       const FOS      = parseFloat(document.getElementById('est-fos').value);
       const FOS_load = parseFloat(document.getElementById('est-fos-load').value);
+      const SY_input = parseFloat(document.getElementById('est-sy').value);
 
       // Validation
       const errs = [];
@@ -421,8 +436,11 @@
         errs.push(`2·t₁ = ${2*t1} mm ≥ B = ${B} mm. Inner width would be ≤ 0.`);
       if (isNaN(P_t) || P_t <= 0)             errs.push('Load P must be > 0 tonnes.');
       if (isNaN(L)   || L  <= 0)              errs.push('Span L must be > 0 mm.');
+      if (isNaN(x_pos) || x_pos <= 0 || x_pos >= L)
+        errs.push('Load position x must satisfy 0 < x < L.');
       if (isNaN(FOS) || FOS < 1.0)            errs.push('FOS must be ≥ 1.0.');
       if (isNaN(FOS_load) || FOS_load < 1.0)  errs.push('FOS_load must be ≥ 1.0.');
+      if (isNaN(SY_input) || SY_input <= 0)   errs.push('σy (yield strength) must be > 0 MPa.');
 
       if (errs.length) {
         estErr.innerHTML = '⚠ ' + errs.join('<br>⚠ ');
@@ -434,19 +452,9 @@
 
       const G_NperT = 9810;    // N per tonne
       const E_MOD   = 210000;  // N/mm²
-       // Find the maximum governing plate thickness
-const t_f = Math.max(t2, t3, t1);
-let SY = 250; // Default fallback
 
-// Correct IS 2062 yield strength reduction based on nominal thickness
-if (t_f <= 20) {
-  SY = 250;
-} else if (t_f > 20 && t_f <= 40) {
-  SY = 240;
-} else if (t_f > 40) {
-  SY = 230;
-}
-
+      // Use user-supplied yield strength directly for this section
+      const SY = SY_input;
 
       const P_N = P_t * G_NperT * FOS_load;
 
@@ -455,10 +463,18 @@ if (t_f <= 20) {
       const I_xx = (1 / 12) * (B * Math.pow(H, 3) - b_inner * Math.pow(h_inner, 3));
 
       const Z = I_xx / (H / 2);
-      const M_max = P_N * L / 4;
-      const sig_b = M_max / Z;
+
+      // Asymmetric point-load moment: M = P·x·(L−x)/L
+      const M_max = P_N * x_pos * (L - x_pos) / L;
+
+      const sig_b     = M_max / Z;
       const sig_allow = SY / FOS;
-      const defl = (P_N * Math.pow(L, 3)) / (48 * E_MOD * I_xx);
+
+      // Deflection at load point x (simply supported, point load at x)
+      // δ_x = P·a²·b² / (3·E·I·L)   where a = x, b = L−x
+      const a_d  = x_pos;
+      const b_d  = L - x_pos;
+      const defl = (P_N * a_d * a_d * b_d * b_d) / (3 * E_MOD * I_xx * L);
 
       document.getElementById('est-results-strip').style.display = 'flex';
 
@@ -474,7 +490,6 @@ if (t_f <= 20) {
       const vTitle   = document.getElementById('est-verdict-title');
       const vSub     = document.getElementById('est-verdict-sub');
 
-      const ratio    = sig_b / sig_allow;
       const pass     = sig_b <= sig_allow;
 
       verdict.style.display = 'flex';
@@ -483,11 +498,9 @@ if (t_f <= 20) {
       vTitle.textContent    = pass
         ? 'STRESS CHECK PASSED — Section is adequate'
         : 'STRESS CHECK FAILED — Section is overstressed';
-      vSub.textContent      = `σ_b = ${sig_b.toFixed(3)} MPa  ${pass ? '≤' : '>'}  σ_allow = ${sig_allow.toFixed(2)} MPa   )`;
+      vSub.textContent      = `σ_b = ${sig_b.toFixed(3)} MPa  ${pass ? '≤' : '>'}  σ_allow = ${sig_allow.toFixed(2)} MPa   (x = ${x_pos} mm)`;
     }
     </script>
-
-```
 
     <!-- ── SFD / BMD Diagrams ──────────────────────────────────────── -->
     <section class="card input-card">
