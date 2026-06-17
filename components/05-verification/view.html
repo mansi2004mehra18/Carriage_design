@@ -1,0 +1,41 @@
+    <section class="card span-2" id="stress-section">
+      <h2 class="card-title">
+        <span class="card-num">05</span> Stress Verification — Design Section
+      </h2>
+      <table class="data-table verify-table">
+        <thead>
+          <tr>
+            <th>Stress Check</th>
+            <th>Calculated (MPa)</th>
+            <th>Allowable (MPa)</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>σ<sub>b</sub> = M/Z (bending)</td>
+            <td id="sv-sigb">—</td>
+            <td id="sv-sigb-lim">—</td>
+            <td id="sv-sigb-ok" class="status-cell">—</td>
+          </tr>
+          <tr>
+            <td>τ = V<sub>max</sub>/A<sub>w</sub> (shear)</td>
+            <td id="sv-tau">—</td>
+            <td id="sv-tau-lim">—</td>
+            <td id="sv-tau-ok" class="status-cell">—</td>
+          </tr>
+          <tr>
+            <td>σ<sub>vm</sub> = √(σ²+3τ²) (Von Mises)</td>
+            <td id="sv-vm">—</td>
+            <td id="sv-vm-lim">—</td>
+            <td id="sv-vm-ok" class="status-cell">—</td>
+          </tr>
+          <tr>
+            <td>τ<sub>max</sub> = √((σ/2)²+τ²) (Tresca)</td>
+            <td id="sv-tr">—</td>
+            <td id="sv-tr-lim">—</td>
+            <td id="sv-tr-ok" class="status-cell">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>

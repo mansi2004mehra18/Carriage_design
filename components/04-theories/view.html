@@ -1,0 +1,47 @@
+    <section class="card span-2">
+      <h2 class="card-title">
+        <span class="card-num">04</span> Failure Theories → Required Breadth B
+      </h2>
+      <table class="data-table theory-table">
+        <thead>
+          <tr>
+            <th>Theory</th>
+            <th>σ<sub>b,allow</sub> (MPa)</th>
+            <th>I<sub>req</sub> (×10⁹ mm⁴)</th>
+            <th>B required (mm)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Pure Bending</td>
+            <td id="th-sall-bend">—</td>
+            <td id="th-Ireq-bend">—</td>
+            <td id="th-B-bend">—</td>
+            <td id="th-st-bend" class="status-cell">—</td>
+          </tr>
+          <tr>
+            <td>2. Von Mises √(σ²+3τ²) ≤ σ<sub>all</sub></td>
+            <td id="th-sall-vm">—</td>
+            <td id="th-Ireq-vm">—</td>
+            <td id="th-B-vm">—</td>
+            <td id="th-st-vm" class="status-cell">—</td>
+          </tr>
+          <tr>
+            <td>3. Tresca τ<sub>max</sub> ≤ σ<sub>y</sub>/2/FOS</td>
+            <td id="th-sall-tr">—</td>
+            <td id="th-Ireq-tr">—</td>
+            <td id="th-B-tr">—</td>
+            <td id="th-st-tr" class="status-cell">—</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="formula-box">
+        <span class="formula-label">Moment formula</span>
+        M<sub>max</sub> = P·x·(L−x) / L &nbsp;&nbsp;[point load at distance x
+        from left support] <br /><br />
+        <span class="formula-label">Closed-form breadth formula</span>
+        b(t₁,t₂,t₃) = [ 12·I<sub>req</sub> − 2t₁·(H−t₂−t₃)³ ] / [ H³ −
+        (H−t₂−t₃)³ ]
+      </div>
+    </section>

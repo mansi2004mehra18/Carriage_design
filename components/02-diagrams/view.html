@@ -1,0 +1,61 @@
+<section class="card sfd-bmd-card">
+  <h2 class="card-title">
+    <span class="card-num">◈</span> Shear Force &amp; Bending Moment Diagrams
+  </h2>
+  <p class="sfd-note">
+    Diagrams update live with load position <em>x</em> and span <em>L</em>.
+  </p>
+  <div class="sfd-bmd-row">
+    <div class="sfd-bmd-item">
+      <div class="diagram-label">Shear Force Diagram (SFD)</div>
+      <canvas id="sfd-canvas" width="520" height="240"></canvas>
+    </div>
+    <div class="sfd-bmd-item">
+      <div class="diagram-label">Bending Moment Diagram (BMD)</div>
+      <canvas id="bmd-canvas" width="520" height="240"></canvas>
+    </div>
+  </div>
+</section>
+
+    <style>
+      .sfd-bmd-card {
+        margin-bottom: 0;
+      }
+      .sfd-note {
+        font-size: 0.78rem;
+        color: var(--muted, #8a9bb0);
+        margin: -4px 0 14px;
+        letter-spacing: 0.02em;
+      }
+      .sfd-bmd-row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .sfd-bmd-item {
+        flex: 1 1 300px;
+        min-width: 280px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .diagram-label {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #f0a500;
+        padding: 3px 8px;
+        border-left: 3px solid #f0a500;
+        background: rgba(240,165,0,0.07);
+      }
+      #sfd-canvas, #bmd-canvas {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        background: #0d1117;
+        border: 1px solid rgba(255,255,255,0.07);
+        display: block;
+      }
+    </style>

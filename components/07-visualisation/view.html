@@ -1,0 +1,40 @@
+<!-- ── Section Cross-Section & Beam Elevation Diagrams ──────── -->
+<section class="card span-2 vis-diagrams-card">
+  <h2 class="card-title"><span class="card-num">◈</span> Section Visualisation</h2>
+  <div class="vis-row">
+    <div class="vis-item">
+      <div class="diagram-label">Box Section Cross-Section</div>
+      <canvas id="cs-canvas" width="420" height="300"></canvas>
+    </div>
+    <div class="vis-item">
+      <div class="diagram-label">Beam Elevation — Wheel to Wheel</div>
+      <canvas id="el-canvas" width="420" height="300"></canvas>
+    </div>
+  </div>
+</section>
+
+<style>
+  .vis-diagrams-card { margin-bottom: 0; }
+  .vis-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .vis-item {
+    flex: 1 1 300px;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #cs-canvas, #el-canvas {
+    width: 100%;
+    /* FIX: Prevents zero-height folding during browser reflow updates */
+    aspect-ratio: 420 / 300;
+    min-height: 220px;
+    border-radius: 4px;
+    background: #0d1117;
+    border: 1px solid rgba(255,255,255,0.07);
+    display: block;
+  }
+</style>

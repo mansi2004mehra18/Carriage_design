@@ -1,0 +1,94 @@
+  <div id="feasibility-hero" class="feasibility-hero">
+    <div class="feas-icon" id="feas-icon">✓</div>
+    <div class="feas-text">
+      <div id="feas-title" class="feas-title">FEASIBLE DESIGN</div>
+      <div id="feas-sub" class="feas-sub"></div>
+    </div>
+    <div id="feas-B" class="feas-B"></div>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi" id="kpi-B">
+      <div class="kpi-val">—</div>
+      <div class="kpi-lbl">Design B (mm)</div>
+    </div>
+    <div class="kpi" id="kpi-Ixx">
+      <div class="kpi-val">—</div>
+      <div class="kpi-lbl">I<sub>xx</sub> (×10⁹ mm⁴)</div>
+    </div>
+    <div class="kpi" id="kpi-Z">
+      <div class="kpi-val">—</div>
+      <div class="kpi-lbl">Z (×10⁶ mm³)</div>
+    </div>
+    <div class="kpi" id="kpi-defl">
+      <div class="kpi-val">—</div>
+      <div class="kpi-lbl">δ at x (mm)</div>
+    </div>
+  </div>
+
+
+<div class="detail-grid">
+  <section class="card">
+    <h2 class="card-title">
+      <span class="card-num">02</span> Loading Analysis
+    </h2>
+    <table class="data-table">
+      <tbody>
+        <tr>
+          <td>Load P</td>
+          <td id="d-PN">—</td>
+        </tr>
+        <tr>
+          <td>Reaction R<sub>A</sub> = P(L−x)/L</td>
+          <td id="d-Ra">—</td>
+        </tr>
+        <tr>
+          <td>Reaction R<sub>B</sub> = Px/L</td>
+          <td id="d-Rb">—</td>
+        </tr>
+        <tr>
+          <td>M<sub>max</sub> = Px(L−x)/L @ x</td>
+          <td id="d-Mmax">—</td>
+        </tr>
+        <tr>
+          <td>V<sub>max</sub> = max(R<sub>A</sub>, R<sub>B</sub>)</td>
+          <td id="d-Vmax">—</td>
+        </tr>
+        <tr>
+          <td>Allowable σ<sub>all</sub></td>
+          <td id="d-Sall">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">
+      <span class="card-num">03</span> Section Geometry
+    </h2>
+    <table class="data-table">
+      <tbody>
+        <tr>
+          <td>Inner height h<sub>i</sub> = H − t₂ − t₃</td>
+          <td id="d-hi">—</td>
+        </tr>
+        <tr>
+          <td>Inner width b<sub>i</sub> = B − 2t₁</td>
+          <td id="d-bi">—</td>
+        </tr>
+        <tr>
+          <td>Web shear area A<sub>w</sub> = 2·t₁·H</td>
+          <td id="d-Aw">—</td>
+        </tr>
+        <tr>
+          <td>Shear stress τ = V<sub>max</sub>/A<sub>w</sub></td>
+          <td id="d-tau">—</td>
+        </tr>
+        <tr>
+          <td>Tresca shear allowable</td>
+          <td id="d-tauall">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>

@@ -1,0 +1,101 @@
+<section class="card input-card">
+      <h2 class="card-title"><span class="card-num">01</span> Design Parameters</h2>
+
+      <div class="input-grid">
+
+        <div class="input-section-label">Span &amp; Load</div>
+
+        <div class="input-group">
+          <label for="inp-L">Span between wheels <em>L</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-L" value="7800" min="500" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Min 500 mm</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-x">Load position from left <em>x</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-x" value="3900" min="1" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>0 &lt; x &lt; L &nbsp;|&nbsp; mid = L/2</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-P">Applied load <em>P</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-P" value="150" min="0.1" step="1" />
+            <span class="unit">tonnes</span>
+          </div>
+          <small>Min 0.1 t</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-H">Section height <em>H</em> <span class="fixed-tag">fixed</span></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-H" value="850" min="100" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Outer height of box section</small>
+        </div>
+
+        <div class="input-section-label">Factor of Safety</div>
+        
+        <div class="input-group">
+          <label for="inp-fos">FOS for allowable stress <em>FOS</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-fos" value="1.2" min="1.0" step="0.05" />
+            <span class="unit">—</span>
+          </div>
+          <small>Min 1.0 &nbsp;|&nbsp; IS 2062 default 1.25</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-fos-load">FOS for axial load(to be multiplied) <em>FOS_load</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-fos-load" value="1" min="1.0" step="0.05" />
+            <span class="unit">—</span>
+          </div>
+          <small>Min 1.0 &nbsp;|&nbsp; IS 2062 default 1.25</small>
+        </div>
+
+        <div class="row"> </div>
+         <div class="row"> </div>
+          <div class="input-section-label">Wall Thicknesses</div>
+
+        <div class="input-group">
+          <label for="inp-t1">Web (side wall) thickness <em>t₁</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-t1" value="12" min="4" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Left &amp; right web plates</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-t2">Top flange thickness <em>t₂</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-t2" value="25" min="4" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Top plate of box section</small>
+        </div>
+
+        <div class="input-group">
+          <label for="inp-t3">Bottom flange thickness <em>t₃</em></label>
+          <div class="input-wrap">
+            <input type="number" id="inp-t3" value="25" min="4" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Bottom plate of box section</small>
+        </div>
+        
+      </div>
+
+      <button id="btn-calc">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Calculate
+      </button>
+    </section>

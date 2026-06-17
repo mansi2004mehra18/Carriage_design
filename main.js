@@ -2,6 +2,12 @@ import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+
+// Trigger initialization when the page is completely loaded
+document.addEventListener('DOMContentLoaded', () => {
+  initEstimatesModule();
+});
+
 // Fix for __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

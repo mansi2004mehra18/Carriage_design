@@ -1,0 +1,486 @@
+
+
+    <section class="card check-estimates-card">
+      <h2 class="card-title"><span class="card-num">⊞</span> Check Our Estimates(This check is for Pure Bending)</h2>
+
+      <div class="est-grid">
+
+        <div class="est-section-label">Section Geometry</div>
+
+        <div class="input-group">
+          <label for="est-B">Breadth <em>B</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-B" value="500" min="10" step="5" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Outer width of box section</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-H">Height <em>H</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-H" value="850" min="10" step="5" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Outer height of box section</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-t1">Web thickness <em>t₁</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-t1" value="12" min="1" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Side wall thickness (both webs)</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-t2">Top flange <em>t₂</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-t2" value="15" min="1" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Top plate thickness</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-t3">Bottom flange <em>t₃</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-t3" value="25" min="1" step="1" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Bottom plate thickness</small>
+        </div>
+
+        <div class="est-section-label">Loading &amp; Span</div>
+
+        <div class="input-group">
+          <label for="est-P">Load <em>P</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-P" value="150" min="0.1" step="1" />
+            <span class="unit">tonnes</span>
+          </div>
+          <small>Applied point load</small> 
+        </div>
+
+        <div class="input-group">
+          <label for="est-L">Span <em>L</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-L" value="7800" min="100" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>Centre-to-centre of supports</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-x">Load position from left <em>x</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-x" value="3900" min="1" step="50" />
+            <span class="unit">mm</span>
+          </div>
+          <small>0 &lt; x &lt; L &nbsp;|&nbsp; mid = L/2</small>
+        </div>
+
+        <div class="est-section-label">Safety Factors</div>
+
+        <div class="input-group">
+          <label for="est-fos">FOS (stress) <em>FOS</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-fos" value="1.25" min="1.0" step="0.05" />
+            <span class="unit">—</span>
+          </div>
+          <small>Allowable = σ<sub>y</sub> / FOS</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-fos-load">FOS (load) <em>FOS_load</em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-fos-load" value="1.0" min="1.0" step="0.05" />
+            <span class="unit">—</span>
+          </div>
+          <small>Load multiplier before calc</small>
+        </div>
+
+        <div class="input-group">
+          <label for="est-sy">Yield strength <em>σ<sub>y</sub></em></label>
+          <div class="input-wrap">
+            <input type="number" id="est-sy" value="250" min="100" step="5" />
+            <span class="unit">MPa</span>
+          </div>
+          <small>Override σ<sub>y</sub> for this section only (IS 2062 E250 BR = 250 MPa)</small>
+        </div>
+
+      </div>
+
+      <button id="btn-est-calc" onclick="runEstimateCheck()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Check Estimates
+      </button>
+
+      <div class="est-results-strip" id="est-results-strip" style="display:none;">
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-I">—</div>
+          <div class="est-kpi-lbl">I<sub>xx</sub> (×10⁹ mm⁴)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-Z">—</div>
+          <div class="est-kpi-lbl">Z (×10⁶ mm³)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-Mmax">—</div>
+          <div class="est-kpi-lbl">M<sub>max</sub> (kN·m)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-sig">—</div>
+          <div class="est-kpi-lbl">σ<sub>b</sub> (MPa)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-sall">—</div>
+          <div class="est-kpi-lbl">σ<sub>allow</sub> (MPa)</div>
+        </div>
+        <div class="est-kpi">
+          <div class="est-kpi-val" id="est-kv-defl">—</div>
+          <div class="est-kpi-lbl">δ at x (mm)</div>
+        </div>
+      </div>
+
+      <div class="est-verdict" id="est-verdict">
+        <div class="est-verdict-icon" id="est-verdict-icon">✓</div>
+        <div class="est-verdict-body">
+          <strong id="est-verdict-title">—</strong>
+          <span id="est-verdict-sub">—</span>
+        </div>
+      </div>
+
+      <div class="est-formula-note">
+        <span class="fl">Moment of Inertia (symmetric box):</span>
+        &nbsp; I = 1/12 · [ B·H³ − (B − 2t₁) · (H − t₂ − t₃)³ ]
+        <br>
+        <span class="fl">Bending moment (point load at x from left):</span>
+        &nbsp; M<sub>max</sub> = P·x·(L−x) / L
+        <br>
+        <span class="fl">Deflection at load point x:</span>
+        &nbsp; δ = P·a²·b² / (3·E·I·L) &nbsp; [a = x, b = L−x]
+        <br>
+        <span class="fl">Allowable bending stress:</span>
+        &nbsp; σ<sub>allow</sub> = σ<sub>y</sub> / FOS &nbsp; [σ<sub>y</sub> = user-specified]
+        <br>
+      </div>
+
+      <div id="est-error" class="error-banner hidden" style="margin-top:12px;"></div>
+    </section>
+
+    <script>
+    function runEstimateCheck() {
+      const estErr = document.getElementById('est-error');
+      estErr.classList.add('hidden');
+
+      const B        = parseFloat(document.getElementById('est-B').value);
+      const H        = parseFloat(document.getElementById('est-H').value);
+      const t1       = parseFloat(document.getElementById('est-t1').value);
+      const t2       = parseFloat(document.getElementById('est-t2').value);
+      const t3       = parseFloat(document.getElementById('est-t3').value);
+      const P_t      = parseFloat(document.getElementById('est-P').value);
+      const L        = parseFloat(document.getElementById('est-L').value);
+      const x_pos    = parseFloat(document.getElementById('est-x').value);
+      const FOS      = parseFloat(document.getElementById('est-fos').value);
+      const FOS_load = parseFloat(document.getElementById('est-fos-load').value);
+      const SY_input = parseFloat(document.getElementById('est-sy').value);
+
+      // Validation
+      const errs = [];
+      if (isNaN(B)  || B  <= 0)               errs.push('Breadth B must be > 0 mm.');
+      if (isNaN(H)  || H  <= 0)               errs.push('Height H must be > 0 mm.');
+      if (isNaN(t1) || t1 <= 0)               errs.push('Web thickness t₁ must be > 0 mm.');
+      if (isNaN(t2) || t2 <= 0)               errs.push('Top flange t₂ must be > 0 mm.');
+      if (isNaN(t3) || t3 <= 0)               errs.push('Bottom flange t₃ must be > 0 mm.');
+      if (!isNaN(t2) && !isNaN(t3) && !isNaN(H) && (t2 + t3) >= H)
+        errs.push(`t₂ + t₃ = ${t2 + t3} mm ≥ H = ${H} mm. Inner height would be ≤ 0.`);
+      if (!isNaN(t1) && !isNaN(B) && (2 * t1) >= B)
+        errs.push(`2·t₁ = ${2*t1} mm ≥ B = ${B} mm. Inner width would be ≤ 0.`);
+      if (isNaN(P_t) || P_t <= 0)             errs.push('Load P must be > 0 tonnes.');
+      if (isNaN(L)   || L  <= 0)              errs.push('Span L must be > 0 mm.');
+      if (isNaN(x_pos) || x_pos <= 0 || x_pos >= L)
+        errs.push('Load position x must satisfy 0 < x < L.');
+      if (isNaN(FOS) || FOS < 1.0)            errs.push('FOS must be ≥ 1.0.');
+      if (isNaN(FOS_load) || FOS_load < 1.0)  errs.push('FOS_load must be ≥ 1.0.');
+      if (isNaN(SY_input) || SY_input <= 0)   errs.push('σy (yield strength) must be > 0 MPa.');
+
+      if (errs.length) {
+        estErr.innerHTML = '⚠ ' + errs.join('<br>⚠ ');
+        estErr.classList.remove('hidden');
+        document.getElementById('est-results-strip').style.display = 'none';
+        document.getElementById('est-verdict').style.display = 'none';
+        return;
+      }
+
+      const G_NperT = 9810;    // N per tonne
+      const E_MOD   = 210000;  // N/mm²
+
+      // Use user-supplied yield strength directly for this section
+      const SY = SY_input;
+
+      const P_N = P_t * G_NperT * FOS_load;
+
+      const h_inner = H - t2 - t3;
+      const b_inner = B - 2 * t1;
+      const I_xx = (1 / 12) * (B * Math.pow(H, 3) - b_inner * Math.pow(h_inner, 3));
+
+      const Z = I_xx / (H / 2);
+
+      // Asymmetric point-load moment: M = P·x·(L−x)/L
+      const M_max = P_N * x_pos * (L - x_pos) / L;
+
+      const sig_b     = M_max / Z;
+      const sig_allow = SY / FOS;
+
+      // Deflection at load point x (simply supported, point load at x)
+      // δ_x = P·a²·b² / (3·E·I·L)   where a = x, b = L−x
+      const a_d  = x_pos;
+      const b_d  = L - x_pos;
+      const defl = (P_N * a_d * a_d * b_d * b_d) / (3 * E_MOD * I_xx * L);
+
+      document.getElementById('est-results-strip').style.display = 'flex';
+
+      document.getElementById('est-kv-I').textContent    = (I_xx / 1e9).toFixed(4);
+      document.getElementById('est-kv-Z').textContent    = (Z    / 1e6).toFixed(4);
+      document.getElementById('est-kv-Mmax').textContent = (M_max / 1e6).toFixed(3);
+      document.getElementById('est-kv-sig').textContent  = sig_b.toFixed(3);
+      document.getElementById('est-kv-sall').textContent = sig_allow.toFixed(2);
+      document.getElementById('est-kv-defl').textContent = defl.toFixed(3);
+
+      const verdict  = document.getElementById('est-verdict');
+      const vIcon    = document.getElementById('est-verdict-icon');
+      const vTitle   = document.getElementById('est-verdict-title');
+      const vSub     = document.getElementById('est-verdict-sub');
+
+      const pass     = sig_b <= sig_allow;
+
+      verdict.style.display = 'flex';
+      verdict.className     = 'est-verdict ' + (pass ? 'pass' : 'fail');
+      vIcon.textContent     = pass ? 'Passed' : 'Failed';
+      vTitle.textContent    = pass
+        ? 'STRESS CHECK PASSED — Section is adequate'
+        : 'STRESS CHECK FAILED — Section is overstressed';
+      vSub.textContent      = `σ_b = ${sig_b.toFixed(3)} MPa  ${pass ? '≤' : '>'}  σ_allow = ${sig_allow.toFixed(2)} MPa   (x = ${x_pos} mm)`;
+    }
+    </script>
+<style>
+  /* ── Check Our Estimates section styles (Dark Theme Overhaul) ──────────────────────── */
+  .check-estimates-card {
+    border: 1px solid rgba(0, 200, 180, 0.25);
+    background: linear-gradient(
+      135deg,
+      rgba(14, 24, 27, 0.95) 0%,
+      rgba(10, 17, 19, 0.98) 100%
+    );
+    position: relative;
+    overflow: hidden;
+    color: #e0e6e8;
+    padding: 24px;
+    border-radius: 8px;
+  }
+  .check-estimates-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00c8b4, transparent);
+  }
+  .check-estimates-card .card-num {
+    background: linear-gradient(135deg, #00c8b4, #00e5cc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .est-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .est-section-label {
+    grid-column: 1 / -1;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #00c8b4;
+    padding: 6px 0 3px;
+    border-bottom: 1px solid rgba(0, 200, 180, 0.25);
+    margin-top: 12px;
+  }
+
+  /* Input Group Layout & Styling Overrides */
+  .check-estimates-card .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .check-estimates-card .input-group label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+  }
+  .check-estimates-card .input-wrap {
+    display: flex;
+    position: relative;
+    align-items: center;
+  }
+  .check-estimates-card .input-wrap input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 200, 180, 0.3);
+    border-radius: 4px;
+    padding: 8px 36px 8px 10px;
+    color: #ffffff;
+    font-family: "Share Tech Mono", monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .check-estimates-card .input-wrap input:focus {
+    border-color: #00c8b4;
+    box-shadow: 0 0 8px rgba(0, 200, 180, 0.3);
+    background: rgba(0, 0, 0, 0.6);
+  }
+  .check-estimates-card .input-wrap .unit {
+    position: absolute;
+    right: 10px;
+    font-size: 0.75rem;
+    color: rgba(0, 200, 180, 0.7);
+    pointer-events: none;
+  }
+  .check-estimates-card .input-group small {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.2;
+  }
+
+  /* Results strip */
+  .est-results-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0 16px;
+  }
+  .est-kpi {
+    flex: 1 1 140px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 200, 180, 0.22);
+    border-radius: 6px;
+    padding: 12px 14px;
+    text-align: center;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+  .est-kpi .est-kpi-val {
+    font-family: "Share Tech Mono", monospace;
+    font-size: 1.35rem;
+    color: #00e5cc;
+    line-height: 1.1;
+    margin-bottom: 4px;
+    text-shadow: 0 0 6px rgba(0, 229, 204, 0.2);
+  }
+  .est-kpi .est-kpi-lbl {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  /* Stress verdict banner */
+  .est-verdict {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin-top: 8px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    font-size: 1rem;
+  }
+  .est-verdict.pass {
+    background: rgba(39, 174, 96, 0.15);
+    border: 1px solid rgba(46, 204, 113, 0.4);
+    color: #2ecc71;
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.05);
+  }
+  .est-verdict.fail {
+    background: rgba(192, 41, 43, 0.15);
+    border: 1px solid rgba(231, 76, 60, 0.4);
+    color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.05);
+  }
+  .est-verdict-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+  .est-verdict-body strong {
+    display: block;
+    font-size: 1.05rem;
+  }
+  .est-verdict-body span {
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+  }
+
+  /* Formula note in estimates */
+  .est-formula-note {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid rgba(0, 200, 180, 0.5);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.73rem;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.7;
+  }
+  .est-formula-note .fl {
+    font-family: "Share Tech Mono", monospace;
+    color: rgba(0, 200, 180, 0.85);
+    font-size: 0.72rem;
+  }
+
+  #btn-est-calc {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #005b53 0%, #007a70 100%);
+    border: 1px solid #00c8b4;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+  }
+  #btn-est-calc:hover {
+    background: linear-gradient(135deg, #007a70 0%, #009688 100%);
+    box-shadow: 0 0 16px rgba(0, 200, 180, 0.35);
+  }
+
+  /* Generic Error Banner handling for dark theme */
+  .error-banner {
+    background: rgba(192, 41, 43, 0.2);
+    border: 1px solid #e74c3c;
+    color: #f1948a;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+  }
+  .hidden {
+    display: none !important;
+  }
+</style>
